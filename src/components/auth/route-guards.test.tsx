@@ -168,6 +168,23 @@ describe("route guards", () => {
     });
   });
 
+  it("clears the session when /auth/me fails unexpectedly", async () => {
+    window.localStorage.setItem("taskflow.access_token", "unstable-token");
+    vi.mocked(getCurrentSession).mockRejectedValueOnce(new TypeError("Failed fetch"));
+
+    renderWithSession(
+      <PrivateRouteGuard>
+        <p>Conteudo privado</p>
+      </PrivateRouteGuard>,
+    );
+
+    await waitFor(() => {
+      expect(window.localStorage.getItem("taskflow.access_token")).toBeNull();
+      expect(routerReplaceMock).toHaveBeenCalledWith("/login");
+    });
+    expect(screen.queryByText("Conteudo privado")).toBeNull();
+  });
+
   it("redirects authenticated users away from login public pages", async () => {
     window.localStorage.setItem("taskflow.access_token", "valid-token");
     vi.mocked(getCurrentSession).mockResolvedValueOnce(session);
@@ -217,6 +234,8 @@ describe("route guards", () => {
     );
 
     expect(await screen.findByText("Ana Silva")).toBeDefined();
+    screen.getByRole("button", { name: "Sair" }).focus();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Sair" }));
     expect(queryClient.getQueryData(["session-marker"])).toBe("cached");
 
     fireEvent.click(screen.getByRole("button", { name: "Sair" }));

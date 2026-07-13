@@ -9,7 +9,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { isApiError } from "@/lib/api-error";
 import {
   clearStoredAccessToken,
   getStoredAccessToken,
@@ -66,18 +65,12 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setSession(currentSession);
         setStatus("authenticated");
       })
-      .catch((error: unknown) => {
+      .catch(() => {
         if (!isMounted) {
           return;
         }
 
-        if (isApiError(error) && error.status === 401) {
-          clearSession();
-          return;
-        }
-
-        setSession(null);
-        setStatus("unauthenticated");
+        clearSession();
       });
 
     return () => {
