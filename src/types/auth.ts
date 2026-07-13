@@ -64,3 +64,8 @@ export type MeResponse = {
   organization: AuthOrganization;
   membership: AuthMembership;
 };
+
+export type LogoutResponse = {
+  message: string;
+  token_revoked: boolean;
+};

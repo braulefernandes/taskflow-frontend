@@ -10,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api-error";
 import { createQueryClient } from "@/lib/query-client";
 import { SessionProvider } from "@/providers/session-provider";
-import { getCurrentSession, loginAccount } from "@/services/auth";
+import { getCurrentSession, loginAccount, logoutSession } from "@/services/auth";
 import LoginPage from "@/app/(public)/login/page";
 
 const routerPushMock = vi.hoisted(() => vi.fn());
@@ -27,6 +27,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/services/auth", () => ({
   getCurrentSession: vi.fn(),
   loginAccount: vi.fn(),
+  logoutSession: vi.fn(),
 }));
 
 const session = {
@@ -79,6 +80,7 @@ describe("LoginPage", () => {
     window.localStorage.clear();
     vi.mocked(getCurrentSession).mockReset();
     vi.mocked(loginAccount).mockReset();
+    vi.mocked(logoutSession).mockReset();
     routerPushMock.mockReset();
     routerReplaceMock.mockReset();
   });

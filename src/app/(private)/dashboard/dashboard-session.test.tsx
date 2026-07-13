@@ -3,12 +3,13 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createQueryClient } from "@/lib/query-client";
 import { SessionProvider } from "@/providers/session-provider";
-import { getCurrentSession, loginAccount } from "@/services/auth";
+import { getCurrentSession, loginAccount, logoutSession } from "@/services/auth";
 import DashboardPage from "@/app/(private)/dashboard/page";
 
 vi.mock("@/services/auth", () => ({
   getCurrentSession: vi.fn(),
   loginAccount: vi.fn(),
+  logoutSession: vi.fn(),
 }));
 
 const session = {
@@ -48,6 +49,7 @@ describe("DashboardPage", () => {
     window.localStorage.clear();
     vi.mocked(getCurrentSession).mockReset();
     vi.mocked(loginAccount).mockReset();
+    vi.mocked(logoutSession).mockReset();
   });
 
   afterEach(() => {

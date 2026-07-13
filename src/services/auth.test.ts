@@ -3,6 +3,7 @@ import { httpClient } from "@/lib/http-client";
 import {
   getCurrentSession,
   loginAccount,
+  logoutSession,
   registerAccount,
   toLoginRequest,
   toRegisterRequest,
@@ -82,6 +83,17 @@ describe("auth service", () => {
     expect(httpClient).toHaveBeenCalledWith("/auth/me", {
       auth: true,
       accessToken: "token-123",
+    });
+  });
+
+  it("posts logout with bearer auth", async () => {
+    vi.mocked(httpClient).mockResolvedValueOnce({});
+
+    await logoutSession();
+
+    expect(httpClient).toHaveBeenCalledWith("/auth/logout", {
+      method: "POST",
+      auth: true,
     });
   });
 });
