@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskFlow Frontend
 
-## Getting Started
+Frontend do TaskFlow com Next.js App Router, TypeScript, Tailwind CSS, ESLint,
+TanStack Query, React Hook Form, Zod e Vitest.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 com App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- ESLint 9
+- TanStack Query
+- React Hook Form, Zod e `@hookform/resolvers`
+- Vitest e Testing Library
+
+## Instalacao
+
+```bash
+npm install
+```
+
+## Ambiente
+
+Crie um arquivo `.env.local` a partir de `.env.example`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+```
+
+Nao coloque segredos em variaveis `NEXT_PUBLIC_*`.
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Execucao
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Abra `http://localhost:3000`.
 
-## Learn More
+## Build e testes
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estrutura
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+src/app          Rotas do App Router e grupos (public)/(private)
+src/components   Componentes reutilizaveis minimos
+src/hooks        Hooks compartilhados
+src/lib          Infraestrutura compartilhada, Query Client e HTTP client
+src/providers    Providers globais da aplicacao
+src/schemas      Schemas Zod compartilhados
+src/services     Exports de servicos da API
+src/types        Tipos compartilhados
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+As rotas `/login`, `/cadastro` e `/dashboard` existem apenas como placeholders
+organizacionais. Autenticacao, sessao, protecao de rotas e dashboard real ainda
+nao foram implementados.
