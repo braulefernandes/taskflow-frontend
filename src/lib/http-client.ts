@@ -40,17 +40,22 @@ async function parseResponse(response: Response): Promise<unknown> {
 function toApiErrorBody(payload: unknown): ApiErrorBody {
   if (typeof payload === "object" && payload !== null) {
     const record = payload as Record<string, unknown>;
+    const nestedError =
+      typeof record.error === "object" && record.error !== null
+        ? (record.error as Record<string, unknown>)
+        : undefined;
+    const source = nestedError ?? record;
     const message =
-      typeof record.message === "string"
-        ? record.message
-        : typeof record.detail === "string"
-          ? record.detail
+      typeof source.message === "string"
+        ? source.message
+        : typeof source.detail === "string"
+          ? source.detail
           : "A API retornou um erro.";
 
     return {
       message,
-      code: typeof record.code === "string" ? record.code : undefined,
-      details: record.details ?? record.detail,
+      code: typeof source.code === "string" ? source.code : undefined,
+      details: source.details ?? source.detail,
     };
   }
 
