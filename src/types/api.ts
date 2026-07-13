@@ -12,6 +12,7 @@ export type ApiRequestOptions<TBody = unknown> = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: TBody;
   headers?: HeadersInit;
+  auth?: boolean;
   accessToken?: string;
   signal?: AbortSignal;
 };

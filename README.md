@@ -90,6 +90,63 @@ Erros tratados na interface:
 - falha de rede;
 - erro inesperado da API.
 
+## Login e sessao
+
+A rota inicial de login e `/login`.
+
+Contrato consumido:
+
+```text
+POST /api/v1/auth/login
+```
+
+O backend recebe JSON:
+
+```json
+{
+  "email": "ana@example.com",
+  "password": "Senha123"
+}
+```
+
+Resposta esperada:
+
+```json
+{
+  "access_token": "jwt",
+  "token_type": "bearer",
+  "expires_in": 1800
+}
+```
+
+Depois do login, o frontend armazena o token e consulta:
+
+```text
+GET /api/v1/auth/me
+Authorization: Bearer <token>
+```
+
+O retorno de `/auth/me` popula o estado publico de sessao com usuario,
+organizacao e membership. A rota `/dashboard` exibe apenas nome, e-mail,
+organizacao, papel e a indicacao de sessao autenticada.
+
+### Estrategia de token
+
+Neste MVP, o JWT e armazenado em `localStorage` por uma camada centralizada em
+`src/lib/auth-token-storage.ts`. O cliente HTTP inclui o bearer token apenas em
+chamadas autenticadas e remove o token em respostas `401`.
+
+Limitacoes:
+
+- o token em `localStorage` e acessivel ao JavaScript;
+- o token nao deve ser exposto em logs;
+- a leitura e escrita devem permanecer centralizadas;
+- uma evolucao recomendada e migrar para cookie `httpOnly` quando o backend
+  oferecer esse contrato.
+
+Esta branch cria a base de sessao, mas ainda nao implementa protecao completa de
+rotas privadas nem logout visual.
+
 ## Build e testes
 
 ```bash

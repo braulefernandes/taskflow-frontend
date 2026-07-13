@@ -1,4 +1,8 @@
 import { ApiError } from "@/lib/api-error";
+import {
+  clearStoredAccessToken,
+  getStoredAccessToken,
+} from "@/lib/auth-token-storage";
 import type { ApiErrorBody, ApiRequestOptions } from "@/types/api";
 
 const jsonContentType = "application/json";
@@ -78,8 +82,11 @@ export async function httpClient<TResponse, TBody = unknown>(
     headers.set("Content-Type", jsonContentType);
   }
 
-  if (options.accessToken) {
-    headers.set("Authorization", `Bearer ${options.accessToken}`);
+  const accessToken =
+    options.accessToken ?? (options.auth ? getStoredAccessToken() : undefined);
+
+  if (accessToken) {
+    headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
   const response = await fetch(buildUrl(path), {
@@ -92,6 +99,10 @@ export async function httpClient<TResponse, TBody = unknown>(
 
   if (!response.ok) {
     const errorBody = toApiErrorBody(payload);
+
+    if (response.status === 401 && options.auth) {
+      clearStoredAccessToken();
+    }
 
     throw new ApiError({
       status: response.status,
