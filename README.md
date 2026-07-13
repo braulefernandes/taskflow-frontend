@@ -49,6 +49,47 @@ npm run dev
 
 Abra `http://localhost:3000`.
 
+## Cadastro
+
+A rota `/cadastro` consome o contrato documentado do backend:
+
+```text
+POST /api/v1/auth/register
+```
+
+Request enviado pelo frontend:
+
+```json
+{
+  "user_name": "Ana Silva",
+  "email": "ana@example.com",
+  "password": "Senha123",
+  "organization_name": "Acme Suporte"
+}
+```
+
+Response esperada: `201 Created` com `user`, `organization` e `membership`.
+O cadastro nao retorna token e nao faz login automatico.
+
+Campos da tela:
+
+- nome;
+- e-mail;
+- nome da organizacao;
+- senha;
+- confirmacao de senha.
+
+A confirmacao de senha e validada apenas no frontend e nao e enviada para a API.
+Depois de um cadastro bem-sucedido, a tela exibe feedback e redireciona para
+`/login`, preservando o e-mail na query string.
+
+Erros tratados na interface:
+
+- `409 email_already_registered`;
+- `422 validation_error`;
+- falha de rede;
+- erro inesperado da API.
+
 ## Build e testes
 
 ```bash
