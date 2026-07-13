@@ -290,4 +290,21 @@ describe("CadastroPage", () => {
       ).toBeDefined();
     });
   });
+
+  it("blocks duplicate submissions while pending", async () => {
+    const request = deferred<typeof successResponse>();
+    vi.mocked(registerAccount).mockReturnValueOnce(request.promise);
+    renderCadastro();
+
+    fillValidForm();
+    await submitForm();
+    const pendingButton = await screen.findByRole("button", {
+      name: "Criando conta...",
+    });
+    fireEvent.click(pendingButton);
+
+    expect(registerAccount).toHaveBeenCalledTimes(1);
+
+    request.resolve(successResponse);
+  });
 });
