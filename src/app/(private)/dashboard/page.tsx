@@ -2,7 +2,7 @@ import { DashboardSession } from "@/app/(private)/dashboard/dashboard-session";
 
 export default function DashboardPage() {
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-16">
+    <section className="w-full">
       <div className="mb-8">
         <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
           Dashboard inicial

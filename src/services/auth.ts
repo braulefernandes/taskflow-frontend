@@ -3,6 +3,7 @@ import type { LoginFormValues } from "@/schemas/login";
 import type { RegisterFormValues } from "@/schemas/register";
 import type {
   LoginRequest,
+  LogoutResponse,
   MeResponse,
   RegisterRequest,
   RegisterResponse,
@@ -43,5 +44,12 @@ export function getCurrentSession(accessToken?: string | null) {
   return httpClient<MeResponse>("/auth/me", {
     auth: true,
     accessToken: accessToken ?? undefined,
+  });
+}
+
+export function logoutSession() {
+  return httpClient<LogoutResponse>("/auth/logout", {
+    method: "POST",
+    auth: true,
   });
 }

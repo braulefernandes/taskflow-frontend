@@ -130,6 +130,30 @@ O retorno de `/auth/me` popula o estado publico de sessao com usuario,
 organizacao e membership. A rota `/dashboard` exibe apenas nome, e-mail,
 organizacao, papel e a indicacao de sessao autenticada.
 
+## Rotas e guard
+
+Rotas publicas:
+
+- `/login`;
+- `/cadastro`.
+
+Rotas privadas:
+
+- `/dashboard`.
+
+Como o JWT esta em `localStorage`, o middleware server-side do Next.js nao
+consegue ler o token. Por isso, esta versao usa guards client-side:
+
+- paginas privadas exibem carregamento enquanto `/auth/me` valida a sessao;
+- sem token, token invalido ou token expirado limpa a sessao e redireciona para
+  `/login`;
+- conteudo privado so e renderizado depois de sessao autenticada;
+- usuarios autenticados que acessam `/login` ou `/cadastro` sao redirecionados
+  para `/dashboard`.
+
+A arquitetura fica preparada para uma futura migracao para cookies `httpOnly`,
+quando entao a protecao podera ser reforcada tambem em middleware/server-side.
+
 ### Estrategia de token
 
 Neste MVP, o JWT e armazenado em `localStorage` por uma camada centralizada em
@@ -144,8 +168,20 @@ Limitacoes:
 - uma evolucao recomendada e migrar para cookie `httpOnly` quando o backend
   oferecer esse contrato.
 
-Esta branch cria a base de sessao, mas ainda nao implementa protecao completa de
-rotas privadas nem logout visual.
+## Logout
+
+Contrato consumido:
+
+```text
+POST /api/v1/auth/logout
+Authorization: Bearer <token>
+```
+
+O logout do backend na Sprint 1 usa JWT stateless: a chamada nao revoga o token
+no servidor. O frontend chama o endpoint quando possivel e, mesmo em falha de
+rede, descarta o token local, limpa o cache da sessao e redireciona para
+`/login`. Nao afirme que o token foi revogado; o comportamento correto e
+descartar o token no cliente.
 
 ## Build e testes
 
@@ -169,6 +205,5 @@ src/services     Exports de servicos da API
 src/types        Tipos compartilhados
 ```
 
-As rotas `/login`, `/cadastro` e `/dashboard` existem apenas como placeholders
-organizacionais. Autenticacao, sessao, protecao de rotas e dashboard real ainda
-nao foram implementados.
+O dashboard atual exibe apenas dados basicos da sessao. Dashboard real,
+categorias, usuarios e solicitacoes pertencem a outras sprints.

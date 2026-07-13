@@ -16,7 +16,7 @@ import {
   setStoredAccessToken,
 } from "@/lib/auth-token-storage";
 import type { LoginFormValues } from "@/schemas/login";
-import { getCurrentSession, loginAccount } from "@/services/auth";
+import { getCurrentSession, loginAccount, logoutSession } from "@/services/auth";
 import type { MeResponse } from "@/types/auth";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
@@ -25,6 +25,7 @@ type SessionContextValue = {
   status: SessionStatus;
   session: MeResponse | null;
   signIn: (values: LoginFormValues) => Promise<MeResponse>;
+  signOut: () => Promise<void>;
   clearSession: () => void;
 };
 
@@ -35,6 +36,7 @@ type SessionProviderProps = {
 };
 
 export function SessionProvider({ children }: SessionProviderProps) {
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<SessionStatus>(() =>
     getStoredAccessToken() ? "loading" : "unauthenticated",
   );
@@ -42,9 +44,10 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   const clearSession = useCallback(() => {
     clearStoredAccessToken();
+    queryClient.clear();
     setSession(null);
     setStatus("unauthenticated");
-  }, []);
+  }, [queryClient]);
 
   useEffect(() => {
     let isMounted = true;
@@ -99,14 +102,25 @@ export function SessionProvider({ children }: SessionProviderProps) {
     }
   }, []);
 
+  const signOut = useCallback(async () => {
+    try {
+      await logoutSession();
+    } catch {
+      // Logout is stateless in Sprint 1; local cleanup is the source of truth.
+    } finally {
+      clearSession();
+    }
+  }, [clearSession]);
+
   const value = useMemo<SessionContextValue>(
     () => ({
       status,
       session,
       signIn,
+      signOut,
       clearSession,
     }),
-    [clearSession, session, signIn, status],
+    [clearSession, session, signIn, signOut, status],
   );
 
   return (
@@ -123,3 +137,4 @@ export function useSession() {
 
   return context;
 }
+import { useQueryClient } from "@tanstack/react-query";
