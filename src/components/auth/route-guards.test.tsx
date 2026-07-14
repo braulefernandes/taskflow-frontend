@@ -18,6 +18,7 @@ import { getCurrentSession, loginAccount, logoutSession } from "@/services/auth"
 const routerReplaceMock = vi.hoisted(() => vi.fn());
 
 vi.mock("next/navigation", () => ({
+  usePathname: () => "/dashboard",
   useRouter: () => ({
     replace: routerReplaceMock,
   }),
@@ -234,11 +235,12 @@ describe("route guards", () => {
     );
 
     expect(await screen.findByText("Ana Silva")).toBeDefined();
-    screen.getByRole("button", { name: "Sair" }).focus();
-    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Sair" }));
+    fireEvent.click(screen.getByRole("button", { name: /Ana Silva/ }));
+    screen.getByRole("menuitem", { name: "Sair" }).focus();
+    expect(document.activeElement).toBe(screen.getByRole("menuitem", { name: "Sair" }));
     expect(queryClient.getQueryData(["session-marker"])).toBe("cached");
 
-    fireEvent.click(screen.getByRole("button", { name: "Sair" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Sair" }));
 
     await waitFor(() => {
       expect(logoutSession).toHaveBeenCalled();
@@ -260,7 +262,8 @@ describe("route guards", () => {
     );
 
     expect(await screen.findByText("Ana Silva")).toBeDefined();
-    fireEvent.click(screen.getByRole("button", { name: "Sair" }));
+    fireEvent.click(screen.getByRole("button", { name: /Ana Silva/ }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Sair" }));
 
     await waitFor(() => {
       expect(window.localStorage.getItem("taskflow.access_token")).toBeNull();

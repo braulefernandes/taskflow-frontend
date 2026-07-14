@@ -63,11 +63,11 @@ describe("DashboardPage", () => {
 
     renderDashboard();
 
-    expect(await screen.findByText("Sessao autenticada.")).toBeDefined();
+    expect(await screen.findByText("Sua conta")).toBeDefined();
     expect(screen.getByText("Ana Silva")).toBeDefined();
     expect(screen.getByText("ana@example.com")).toBeDefined();
     expect(screen.getByText("Acme Suporte")).toBeDefined();
-    expect(screen.getByText("ADMIN")).toBeDefined();
+    expect(screen.getByText("Administrador")).toBeDefined();
     expect(getCurrentSession).toHaveBeenCalledWith("valid-token");
   });
 });
