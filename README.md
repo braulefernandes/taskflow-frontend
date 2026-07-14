@@ -186,6 +186,30 @@ rede, descarta o token local, limpa o cache da sessao e redireciona para
 `/login`. Nao afirme que o token foi revogado; o comportamento correto e
 descartar o token no cliente.
 
+## Gerenciamento de membros
+
+A rota `/usuarios` e exclusiva para `ADMIN`. A interface oculta o acesso para
+os demais papeis e bloqueia acesso direto; o backend permanece como fonte de
+verdade da autorizacao.
+
+Contratos consumidos:
+
+```text
+GET   /api/v1/members?search=&role=&is_active=&page=&page_size=
+POST  /api/v1/members
+PATCH /api/v1/members/{membership_id}
+PATCH /api/v1/members/{membership_id}/status
+```
+
+A listagem oferece busca por nome/e-mail, filtros de papel e status, paginacao
+e estados de carregamento, erro e vazio. A criacao envia `name`, `email`, `role`
+e `temporary_password`, usa React Hook Form/Zod e trata
+`membership_already_exists`.
+
+Alteracoes de papel e status pedem confirmacao. O conflito `last_active_admin`
+e apresentado com mensagem clara. Status usa atualizacao otimista com rollback
+em erro; as mutacoes atualizam ou invalidam o cache de membros.
+
 ## Build e testes
 
 ```bash
@@ -216,9 +240,9 @@ Nome da organizacao e papel vêm da sessao validada por `GET /auth/me`.
 
 A navegacao inicial contém Dashboard e Perfil para todos os papeis. Usuarios e
 Categorias aparecem somente para `ADMIN`; isso controla apenas a interface, e o
-backend permanece como fonte de verdade para autorizacao. As paginas dessas
-secoes sao placeholders: gestao de membros, categorias e recuperacao de senha
-nao fazem parte desta entrega.
+backend permanece como fonte de verdade para autorizacao. Categorias continuam
+como placeholder; categorias, perfil e recuperacao de senha nao fazem parte
+desta entrega.
 
 Links e botoes têm foco visivel, menus podem ser fechados com `Escape`, a rota
 ativa usa `aria-current` e os estados de carregamento possuem `role="status"`.
