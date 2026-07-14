@@ -119,6 +119,8 @@ export function LoginForm() {
         {isSubmitting ? "Entrando..." : "Entrar"}
       </Button>
 
+      <p className="text-center text-sm"><Link className="font-medium text-slate-950 underline" href="/recuperar-senha">Esqueci minha senha</Link></p>
+
       <p className="text-center text-sm text-slate-600">
         Ainda nao tem conta?{" "}
         <Link className="font-medium text-slate-950 underline" href="/cadastro">
