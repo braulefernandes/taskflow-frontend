@@ -229,6 +229,27 @@ HTTP/HTTPS. Depois do sucesso, o frontend atualiza o provider de sessao e o
 cache de `GET /auth/me`, refletindo o novo nome no cabecalho sem substituir o
 token ou encerrar a sessao.
 
+## Gerenciamento de categorias
+
+A rota `/categorias` e exclusiva para `ADMIN`. Ela lista categorias ativas e
+inativas, permite busca local por nome/descricao, filtro textual de status,
+criacao, edicao e alteracao de status sem exclusao fisica.
+
+Contratos consumidos:
+
+```text
+GET   /api/v1/categories?include_inactive=true
+POST  /api/v1/categories
+PATCH /api/v1/categories/{category_id}
+PATCH /api/v1/categories/{category_id}/status
+```
+
+O backend nao oferece busca textual; por isso, busca e filtro sao aplicados no
+cliente sobre a listagem administrativa completa. Os formularios usam React
+Hook Form e Zod, enviam apenas `name` e `description` e tratam o conflito
+`category_already_exists`. Ativacao e desativacao exigem confirmacao, atualizam
+o cache e nunca chamam um endpoint de exclusao.
+
 ## Build e testes
 
 ```bash
@@ -259,9 +280,8 @@ Nome da organizacao e papel vêm da sessao validada por `GET /auth/me`.
 
 A navegacao inicial contém Dashboard e Perfil para todos os papeis. Usuarios e
 Categorias aparecem somente para `ADMIN`; isso controla apenas a interface, e o
-backend permanece como fonte de verdade para autorizacao. Categorias continuam
-como placeholder; categorias e recuperacao de senha nao fazem parte desta
-entrega.
+backend permanece como fonte de verdade para autorizacao. Recuperacao de senha
+nao faz parte desta entrega.
 
 Links e botoes têm foco visivel, menus podem ser fechados com `Escape`, a rota
 ativa usa `aria-current` e os estados de carregamento possuem `role="status"`.
