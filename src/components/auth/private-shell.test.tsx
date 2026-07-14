@@ -9,7 +9,7 @@ import type { MeResponse } from "@/types/auth";
 
 const replaceMock = vi.hoisted(() => vi.fn());
 vi.mock("next/navigation", () => ({ usePathname: () => "/dashboard", useRouter: () => ({ replace: replaceMock }) }));
-vi.mock("@/services/auth", () => ({ getCurrentSession: vi.fn(), loginAccount: vi.fn(), logoutSession: vi.fn() }));
+vi.mock("@/services/auth", () => ({ authMeQueryKey: ["auth", "me"], getCurrentSession: vi.fn(), loginAccount: vi.fn(), logoutSession: vi.fn() }));
 
 function session(role: MeResponse["membership"]["role"]): MeResponse {
   return { user: { id: "u1", name: "Ana Silva", email: "ana@example.com", avatar_url: null, is_active: true }, organization: { id: "o1", name: "Acme Suporte", slug: "acme" }, membership: { id: "m1", role, is_active: true } };

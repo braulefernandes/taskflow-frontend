@@ -8,7 +8,10 @@ import type {
   RegisterRequest,
   RegisterResponse,
   TokenResponse,
+  UserProfileUpdateRequest,
 } from "@/types/auth";
+
+export const authMeQueryKey = ["auth", "me"] as const;
 
 export function toRegisterRequest(values: RegisterFormValues): RegisterRequest {
   return {
@@ -51,5 +54,13 @@ export function logoutSession() {
   return httpClient<LogoutResponse>("/auth/logout", {
     method: "POST",
     auth: true,
+  });
+}
+
+export function updateOwnProfile(payload: UserProfileUpdateRequest) {
+  return httpClient<MeResponse["user"], UserProfileUpdateRequest>("/users/me", {
+    method: "PATCH",
+    auth: true,
+    body: payload,
   });
 }

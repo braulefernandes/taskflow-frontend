@@ -16,7 +16,7 @@ vi.mock("@/services/members", async (original) => ({
 
 const member: Member = { id: "member-1", user_id: "user-1", name: "Ana Silva", email: "ana@example.com", role: "AGENT", is_active: true, created_at: "2026-07-14T12:00:00Z", updated_at: "2026-07-14T12:00:00Z" };
 const list: MemberList = { items: [member], total: 1, page: 1, page_size: 20 };
-const session = (role: "ADMIN" | "MANAGER" = "ADMIN") => ({ status: "authenticated", session: { user: { id: "u", name: "Admin", email: "admin@example.com", avatar_url: null, is_active: true }, organization: { id: "o", name: "Org", slug: "org" }, membership: { id: "m", role, is_active: true } }, signIn: vi.fn(), signOut: vi.fn(), clearSession: vi.fn() } as const);
+const session = (role: "ADMIN" | "MANAGER" = "ADMIN") => ({ status: "authenticated", session: { user: { id: "u", name: "Admin", email: "admin@example.com", avatar_url: null, is_active: true }, organization: { id: "o", name: "Org", slug: "org" }, membership: { id: "m", role, is_active: true } }, signIn: vi.fn(), signOut: vi.fn(), clearSession: vi.fn(), updateSessionUser: vi.fn() } as const);
 
 function setup() {
   const client = createQueryClient();
