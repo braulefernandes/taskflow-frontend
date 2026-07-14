@@ -135,7 +135,9 @@ organizacao, papel e a indicacao de sessao autenticada.
 Rotas publicas:
 
 - `/login`;
-- `/cadastro`.
+- `/cadastro`;
+- `/recuperar-senha`;
+- `/redefinir-senha?token=<token>`.
 
 Rotas privadas:
 
@@ -250,6 +252,29 @@ Hook Form e Zod, enviam apenas `name` e `description` e tratam o conflito
 `category_already_exists`. Ativacao e desativacao exigem confirmacao, atualizam
 o cache e nunca chamam um endpoint de exclusao.
 
+## Recuperacao de senha
+
+O fluxo publico possui duas etapas:
+
+```text
+POST /api/v1/auth/forgot-password
+POST /api/v1/auth/reset-password
+```
+
+`/recuperar-senha` envia apenas o e-mail e sempre apresenta a mensagem generica
+de que as instrucoes serao enviadas se a conta existir. Depois da resposta, o
+formulario deixa de permitir novos envios.
+
+O backend gera links no formato `/redefinir-senha?token=<token>`. A pagina le o
+parametro `token` diretamente da query string e o envia somente no corpo da
+requisicao de redefinicao, junto de `new_password`. O token nao e armazenado nem
+registrado e e removido da URL depois do sucesso.
+
+A nova senha segue a politica do backend: 8 a 128 caracteres, ao menos uma
+letra e um numero. Token ausente impede o formulario; tokens invalidos,
+expirados ou usados recebem a mesma mensagem segura. Apos sucesso, os campos
+sensíveis sao limpos e o usuario e redirecionado ao login.
+
 ## Build e testes
 
 ```bash
@@ -280,8 +305,7 @@ Nome da organizacao e papel vêm da sessao validada por `GET /auth/me`.
 
 A navegacao inicial contém Dashboard e Perfil para todos os papeis. Usuarios e
 Categorias aparecem somente para `ADMIN`; isso controla apenas a interface, e o
-backend permanece como fonte de verdade para autorizacao. Recuperacao de senha
-nao faz parte desta entrega.
+backend permanece como fonte de verdade para autorizacao.
 
 Links e botoes têm foco visivel, menus podem ser fechados com `Escape`, a rota
 ativa usa `aria-current` e os estados de carregamento possuem `role="status"`.
