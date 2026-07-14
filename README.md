@@ -139,7 +139,10 @@ Rotas publicas:
 
 Rotas privadas:
 
-- `/dashboard`.
+- `/dashboard`;
+- `/usuarios` (navegação visível apenas para `ADMIN`);
+- `/categorias` (navegação visível apenas para `ADMIN`);
+- `/perfil`.
 
 Como o JWT esta em `localStorage`, o middleware server-side do Next.js nao
 consegue ler o token. Por isso, esta versao usa guards client-side:
@@ -205,5 +208,17 @@ src/services     Exports de servicos da API
 src/types        Tipos compartilhados
 ```
 
-O dashboard atual exibe apenas dados basicos da sessao. Dashboard real,
-categorias, usuarios e solicitacoes pertencem a outras sprints.
+## Layout privado
+
+As rotas privadas compartilham um shell responsivo com sidebar no desktop,
+menu lateral no mobile, header, breadcrumbs, marca TaskFlow e menu do usuario.
+Nome da organizacao e papel vêm da sessao validada por `GET /auth/me`.
+
+A navegacao inicial contém Dashboard e Perfil para todos os papeis. Usuarios e
+Categorias aparecem somente para `ADMIN`; isso controla apenas a interface, e o
+backend permanece como fonte de verdade para autorizacao. As paginas dessas
+secoes sao placeholders: gestao de membros, categorias e recuperacao de senha
+nao fazem parte desta entrega.
+
+Links e botoes têm foco visivel, menus podem ser fechados com `Escape`, a rota
+ativa usa `aria-current` e os estados de carregamento possuem `role="status"`.
