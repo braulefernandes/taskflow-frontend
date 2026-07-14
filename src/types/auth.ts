@@ -65,6 +65,11 @@ export type MeResponse = {
   membership: AuthMembership;
 };
 
+export type UserProfileUpdateRequest = {
+  name: string;
+  avatar_url: string | null;
+};
+
 export type LogoutResponse = {
   message: string;
   token_revoked: boolean;

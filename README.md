@@ -210,6 +210,25 @@ Alteracoes de papel e status pedem confirmacao. O conflito `last_active_admin`
 e apresentado com mensagem clara. Status usa atualizacao otimista com rollback
 em erro; as mutacoes atualizam ou invalidam o cache de membros.
 
+## Perfil do usuario
+
+A rota privada `/perfil` exibe nome, avatar URL, e-mail, organizacao e papel da
+sessao atual. Somente nome e avatar URL podem ser editados; e-mail, organizacao
+e papel permanecem somente leitura.
+
+Contrato consumido:
+
+```text
+PATCH /api/v1/users/me
+Authorization: Bearer <token>
+```
+
+O payload contém apenas `name` e `avatar_url`. Uma URL vazia envia `null` para
+remover o avatar. O formulario usa React Hook Form e Zod, aceitando somente URLs
+HTTP/HTTPS. Depois do sucesso, o frontend atualiza o provider de sessao e o
+cache de `GET /auth/me`, refletindo o novo nome no cabecalho sem substituir o
+token ou encerrar a sessao.
+
 ## Build e testes
 
 ```bash
@@ -241,8 +260,8 @@ Nome da organizacao e papel vêm da sessao validada por `GET /auth/me`.
 A navegacao inicial contém Dashboard e Perfil para todos os papeis. Usuarios e
 Categorias aparecem somente para `ADMIN`; isso controla apenas a interface, e o
 backend permanece como fonte de verdade para autorizacao. Categorias continuam
-como placeholder; categorias, perfil e recuperacao de senha nao fazem parte
-desta entrega.
+como placeholder; categorias e recuperacao de senha nao fazem parte desta
+entrega.
 
 Links e botoes têm foco visivel, menus podem ser fechados com `Escape`, a rota
 ativa usa `aria-current` e os estados de carregamento possuem `role="status"`.

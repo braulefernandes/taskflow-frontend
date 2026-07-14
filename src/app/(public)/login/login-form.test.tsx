@@ -25,6 +25,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/services/auth", () => ({
+  authMeQueryKey: ["auth", "me"],
   getCurrentSession: vi.fn(),
   loginAccount: vi.fn(),
   logoutSession: vi.fn(),

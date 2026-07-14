@@ -12,7 +12,7 @@ import { PrivateRouteGuard } from "@/components/auth/private-route-guard";
 import { PrivateShell } from "@/components/auth/private-shell";
 import { PublicRouteGuard } from "@/components/auth/public-route-guard";
 import { createQueryClient } from "@/lib/query-client";
-import { SessionProvider } from "@/providers/session-provider";
+import { SessionProvider, useSession } from "@/providers/session-provider";
 import { getCurrentSession, loginAccount, logoutSession } from "@/services/auth";
 
 const routerReplaceMock = vi.hoisted(() => vi.fn());
@@ -25,10 +25,16 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/services/auth", () => ({
+  authMeQueryKey: ["auth", "me"],
   getCurrentSession: vi.fn(),
   loginAccount: vi.fn(),
   logoutSession: vi.fn(),
 }));
+
+function UpdateSessionUser() {
+  const { session, updateSessionUser } = useSession();
+  return <button onClick={() => session && updateSessionUser({ ...session.user, name: "Nome Atualizado" })}>Atualizar usuario</button>;
+}
 
 const session = {
   user: {
@@ -269,5 +275,16 @@ describe("route guards", () => {
       expect(window.localStorage.getItem("taskflow.access_token")).toBeNull();
       expect(routerReplaceMock).toHaveBeenCalledWith("/login");
     });
+  });
+
+  it("updates the shared session and auth cache without invalidating the token", async () => {
+    window.localStorage.setItem("taskflow.access_token", "valid-token");
+    vi.mocked(getCurrentSession).mockResolvedValueOnce(session);
+    const { queryClient } = renderWithSession(<PrivateShell><UpdateSessionUser /></PrivateShell>);
+    expect(await screen.findByText("Ana Silva")).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Atualizar usuario" }));
+    await waitFor(() => expect(screen.getByText("Nome Atualizado")).toBeDefined());
+    expect(queryClient.getQueryData<typeof session>(["auth", "me"])?.user.name).toBe("Nome Atualizado");
+    expect(window.localStorage.getItem("taskflow.access_token")).toBe("valid-token");
   });
 });

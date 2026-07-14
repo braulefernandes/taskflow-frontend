@@ -5,6 +5,7 @@ import {
   loginAccount,
   logoutSession,
   registerAccount,
+  updateOwnProfile,
   toLoginRequest,
   toRegisterRequest,
 } from "@/services/auth";
@@ -94,6 +95,16 @@ describe("auth service", () => {
     expect(httpClient).toHaveBeenCalledWith("/auth/logout", {
       method: "POST",
       auth: true,
+    });
+  });
+
+  it("patches only the editable profile fields with bearer auth", async () => {
+    vi.mocked(httpClient).mockResolvedValueOnce({});
+    await updateOwnProfile({ name: "Ana Atualizada", avatar_url: "https://example.com/avatar.png" });
+    expect(httpClient).toHaveBeenCalledWith("/users/me", {
+      method: "PATCH",
+      auth: true,
+      body: { name: "Ana Atualizada", avatar_url: "https://example.com/avatar.png" },
     });
   });
 });

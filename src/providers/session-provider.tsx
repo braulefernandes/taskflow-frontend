@@ -16,8 +16,8 @@ import {
   setStoredAccessToken,
 } from "@/lib/auth-token-storage";
 import type { LoginFormValues } from "@/schemas/login";
-import { getCurrentSession, loginAccount, logoutSession } from "@/services/auth";
-import type { MeResponse } from "@/types/auth";
+import { authMeQueryKey, getCurrentSession, loginAccount, logoutSession } from "@/services/auth";
+import type { AuthUser, MeResponse } from "@/types/auth";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -27,6 +27,7 @@ type SessionContextValue = {
   signIn: (values: LoginFormValues) => Promise<MeResponse>;
   signOut: () => Promise<void>;
   clearSession: () => void;
+  updateSessionUser: (user: AuthUser) => void;
 };
 
 const SessionContext = createContext<SessionContextValue | null>(null);
@@ -64,6 +65,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         }
 
         setSession(currentSession);
+        queryClient.setQueryData(authMeQueryKey, currentSession);
         setStatus("authenticated");
       })
       .catch(() => {
@@ -77,7 +79,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return () => {
       isMounted = false;
     };
-  }, [clearSession]);
+  }, [clearSession, queryClient]);
 
   const signIn = useCallback(async (values: LoginFormValues) => {
     const token = await loginAccount(values);
@@ -86,6 +88,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
     try {
       const currentSession = await getCurrentSession(token.access_token);
       setSession(currentSession);
+      queryClient.setQueryData(authMeQueryKey, currentSession);
       setStatus("authenticated");
       return currentSession;
     } catch (error) {
@@ -94,7 +97,14 @@ export function SessionProvider({ children }: SessionProviderProps) {
       setStatus("unauthenticated");
       throw error;
     }
-  }, []);
+  }, [queryClient]);
+
+  const updateSessionUser = useCallback((user: AuthUser) => {
+    if (!session) return;
+    const updated = { ...session, user };
+    setSession(updated);
+    queryClient.setQueryData(authMeQueryKey, updated);
+  }, [queryClient, session]);
 
   const signOut = useCallback(async () => {
     try {
@@ -113,8 +123,9 @@ export function SessionProvider({ children }: SessionProviderProps) {
       signIn,
       signOut,
       clearSession,
+      updateSessionUser,
     }),
-    [clearSession, session, signIn, signOut, status],
+    [clearSession, session, signIn, signOut, status, updateSessionUser],
   );
 
   return (

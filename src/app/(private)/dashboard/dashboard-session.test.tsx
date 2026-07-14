@@ -7,6 +7,7 @@ import { getCurrentSession, loginAccount, logoutSession } from "@/services/auth"
 import DashboardPage from "@/app/(private)/dashboard/page";
 
 vi.mock("@/services/auth", () => ({
+  authMeQueryKey: ["auth", "me"],
   getCurrentSession: vi.fn(),
   loginAccount: vi.fn(),
   logoutSession: vi.fn(),
