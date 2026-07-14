@@ -59,9 +59,21 @@ describe("private layout", () => {
     fireEvent.click(trigger);
     const menu = screen.getByLabelText("Menu mobile");
     expect(within(menu).getByRole("link", { name: "Dashboard" })).toBeDefined();
+    expect(within(menu).getByRole("link", { name: /Usu/ })).toBeDefined();
+    expect(within(menu).getByRole("link", { name: "Categorias" })).toBeDefined();
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByLabelText("Menu mobile")).toBeNull();
+  });
+
+  it("keeps administrative items out of the mobile menu for non-admin roles", async () => {
+    renderShell("AGENT");
+    await screen.findByText("Ana Silva");
+    fireEvent.click(screen.getByRole("button", { name: "Abrir menu" }));
+    const menu = screen.getByLabelText("Menu mobile");
+    expect(within(menu).queryByRole("link", { name: /Usu/ })).toBeNull();
+    expect(within(menu).queryByRole("link", { name: "Categorias" })).toBeNull();
+    expect(within(menu).getByRole("link", { name: "Perfil" })).toBeDefined();
   });
 
   it("supports the keyboard-accessible user menu and logout", async () => {

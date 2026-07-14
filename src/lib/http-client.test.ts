@@ -1,0 +1,14 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ApiError } from "@/lib/api-error";
+import { httpClient } from "@/lib/http-client";
+
+describe("httpClient", () => {
+  beforeEach(() => { process.env.NEXT_PUBLIC_API_URL = "http://api.test/api/v1/"; localStorage.clear(); vi.stubGlobal("fetch", vi.fn()); });
+  afterEach(() => { vi.unstubAllGlobals(); delete process.env.NEXT_PUBLIC_API_URL; });
+
+  it("sends authenticated JSON and parses the response", async () => { localStorage.setItem("taskflow.access_token", "jwt"); vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "content-type": "application/json" } })); await expect(httpClient("members", { method: "POST", auth: true, body: { name: "Ana" } })).resolves.toEqual({ ok: true }); expect(fetch).toHaveBeenCalledWith("http://api.test/api/v1/members", expect.objectContaining({ method: "POST", body: JSON.stringify({ name: "Ana" }) })); const headers = vi.mocked(fetch).mock.calls[0][1]?.headers as Headers; expect(headers.get("Authorization")).toBe("Bearer jwt"); expect(headers.get("Content-Type")).toBe("application/json"); });
+  it("accepts an explicit access token and empty success response", async () => { vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 204 })); await expect(httpClient("/auth/logout", { auth: true, accessToken: "explicit" })).resolves.toBeUndefined(); const headers = vi.mocked(fetch).mock.calls[0][1]?.headers as Headers; expect(headers.get("Authorization")).toBe("Bearer explicit"); });
+  it("maps nested API errors and clears stored auth on 401", async () => { localStorage.setItem("taskflow.access_token", "expired"); vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ error: { code: "not_authenticated", message: "Nao autenticado.", details: { reason: "expired" } } }), { status: 401, headers: { "content-type": "application/json" } })); const error = await httpClient("/auth/me", { auth: true }).catch((caught) => caught); expect(error).toBeInstanceOf(ApiError); expect(error).toMatchObject({ status: 401, code: "not_authenticated", message: "Nao autenticado.", details: { reason: "expired" } }); expect(localStorage.getItem("taskflow.access_token")).toBeNull(); });
+  it("maps plain text and empty error responses safely", async () => { vi.mocked(fetch).mockResolvedValueOnce(new Response("Indisponivel", { status: 503 })).mockResolvedValueOnce(new Response(null, { status: 500 })); await expect(httpClient("/one")).rejects.toMatchObject({ status: 503, message: "Indisponivel" }); await expect(httpClient("/two")).rejects.toMatchObject({ status: 500, message: "A API retornou um erro." }); });
+  it("fails clearly when the public API URL is missing", async () => { delete process.env.NEXT_PUBLIC_API_URL; await expect(httpClient("/health")).rejects.toThrow("NEXT_PUBLIC_API_URL is not configured."); expect(fetch).not.toHaveBeenCalled(); });
+});
