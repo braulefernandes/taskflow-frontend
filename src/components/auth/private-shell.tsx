@@ -8,7 +8,7 @@ import { useSession } from "@/providers/session-provider";
 type PrivateShellProps = { children: ReactNode };
 
 const navigation = [
-  { label: "Dashboard", href: "/dashboard", icon: HomeIcon },
+  { label: "Dashboard", href: "/dashboard", icon: HomeIcon, management: true },
   { label: "SolicitaÃ§Ãµes", href: "/solicitacoes", icon: TicketIcon },
   { label: "Usuários", href: "/usuarios", icon: UsersIcon, admin: true },
   { label: "Categorias", href: "/categorias", icon: TagIcon, admin: true },
@@ -39,8 +39,9 @@ export function PrivateShell({ children }: PrivateShellProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const isAdmin = session?.membership.role === "ADMIN";
+  const isManagement = isAdmin || session?.membership.role === "MANAGER";
   const visibleNavigation = navigation.filter(
-    (item) => !("admin" in item) || isAdmin,
+    (item) => (!("admin" in item) || isAdmin) && (!("management" in item) || isManagement),
   );
   const pageTitle = routeLabels[pathname] ?? "TaskFlow";
 
