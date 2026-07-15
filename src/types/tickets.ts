@@ -78,3 +78,6 @@ export type TicketUpdateRequest = Partial<{
   priority: TicketPriority;
   due_date: string | null;
 }>;
+
+export type TicketAssigneeUpdateRequest = { assignee_id: string | null };
+export type TicketStatusUpdateRequest = { status: TicketStatus };

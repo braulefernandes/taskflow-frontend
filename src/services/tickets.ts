@@ -1,5 +1,5 @@
 import { httpClient } from "@/lib/http-client";
-import type { TicketCreateRequest, TicketListParams, TicketListResponse, TicketSummary, TicketUpdateRequest } from "@/types/tickets";
+import type { TicketAssigneeUpdateRequest, TicketCreateRequest, TicketListParams, TicketListResponse, TicketStatusUpdateRequest, TicketSummary, TicketUpdateRequest } from "@/types/tickets";
 
 export const ticketsQueryKey = ["tickets"] as const;
 
@@ -32,4 +32,18 @@ export function updateTicket(id: string, payload: TicketUpdateRequest) {
     auth: true,
     body: payload,
   });
+}
+
+export function updateTicketAssignee(id: string, assigneeId: string | null) {
+  const body: TicketAssigneeUpdateRequest = { assignee_id: assigneeId };
+  return httpClient<TicketSummary, TicketAssigneeUpdateRequest>(`/tickets/${id}/assignee`, { method: "PATCH", auth: true, body });
+}
+
+export function updateTicketStatus(id: string, status: TicketStatusUpdateRequest["status"]) {
+  const body: TicketStatusUpdateRequest = { status };
+  return httpClient<TicketSummary, TicketStatusUpdateRequest>(`/tickets/${id}/status`, { method: "PATCH", auth: true, body });
+}
+
+export function cancelTicket(id: string) {
+  return httpClient<TicketSummary>(`/tickets/${id}/cancel`, { method: "POST", auth: true });
 }
