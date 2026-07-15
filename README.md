@@ -381,3 +381,24 @@ quando atribuidos; solicitantes podem editar e cancelar somente ticket proprio,
 pendente e sem responsavel. Estados concluidos e cancelados ocultam operacoes
 incompativeis. Nesta branch, as acoes sao apenas links para os fluxos futuros;
 nenhuma mutacao foi implementada.
+
+### Edicao da solicitacao
+
+A rota `/solicitacoes/[id]/edit` carrega o ticket e as categorias ativas, e
+envia uma atualizacao parcial com `PATCH /tickets/{id}`. O formulario permite
+alterar titulo, descricao e categoria; prioridade e prazo aparecem somente
+quando o contrato permite planejamento. Apenas campos modificados integram o
+payload, sem organizacao, solicitante, responsavel, status ou datas internas.
+
+Administradores e gestores podem editar os dados descritivos; em tickets
+concluidos, prioridade e prazo permanecem bloqueados. Solicitantes podem editar
+o proprio ticket somente quando pendente e sem responsavel, sem acesso aos
+campos de planejamento. Agentes e usuarios fora do escopo nao recebem o
+formulario, e tickets cancelados nao podem ser editados. O backend permanece
+como fonte de verdade para todas as permissoes.
+
+O prazo usa data/hora local e e convertido para ISO somente quando alterado.
+A categoria atual continua identificada caso tenha sido inativada, mas as novas
+opcoes sao exclusivamente categorias ativas. Apos sucesso, os caches do detalhe
+e da listagem sao atualizados/invalidados e a navegacao retorna aos detalhes.
+Atribuicao e mudanca de status nao fazem parte deste fluxo.
