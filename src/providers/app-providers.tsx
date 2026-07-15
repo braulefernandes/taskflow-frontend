@@ -1,0 +1,21 @@
+"use client";
+
+import { QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import { createQueryClient } from "@/lib/query-client";
+import { SessionProvider } from "@/providers/session-provider";
+
+type AppProvidersProps = {
+  children: ReactNode;
+};
+
+export function AppProviders({ children }: AppProvidersProps) {
+  const [queryClient] = useState(createQueryClient);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider>{children}</SessionProvider>
+    </QueryClientProvider>
+  );
+}
