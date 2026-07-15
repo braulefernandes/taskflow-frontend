@@ -309,3 +309,15 @@ backend permanece como fonte de verdade para autorizacao.
 
 Links e botoes têm foco visivel, menus podem ser fechados com `Escape`, a rota
 ativa usa `aria-current` e os estados de carregamento possuem `role="status"`.
+
+## Componentes de solicitacoes
+
+Os componentes reutilizaveis da Sprint 3 ficam em `src/components/tickets` e
+`src/components/ui`. O conjunto inclui badges tipados de status e prioridade,
+card responsivo, responsavel, tabela generica, paginacao, estados vazio/erro,
+skeleton, modal de confirmacao e campos `select`, `textarea` e data/hora.
+
+Tipos e enums ficam em `src/types/tickets.ts`. Traducoes e formatacao de datas
+ficam em `src/lib/ticket-formatters.ts`. Datas UTC recebidas nao sao alteradas;
+os helpers criam somente uma representacao no timezone local do navegador.
+Esta camada nao busca dados e nao implementa paginas ou integracao de tickets.
