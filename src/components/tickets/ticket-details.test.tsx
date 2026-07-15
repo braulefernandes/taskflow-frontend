@@ -60,6 +60,13 @@ describe("detalhes da solicitação", () => {
     expect(screen.getByText(/não existe ou não está disponível/)).toBeDefined();
   });
 
+  it("trata acesso negado com mensagem contextualizada", async () => {
+    vi.mocked(getTicket).mockRejectedValue(new ApiError({ status: 403, code: "insufficient_role", message: "negado" }));
+    setup();
+    expect(await screen.findByRole("heading", { name: "Acesso negado" })).toBeDefined();
+    expect(screen.getByText("Você não possui permissão para visualizar esta solicitação.")).toBeDefined();
+  });
+
   it("rejeita ID inválido sem consultar a API", () => {
     setup("id-invalido");
     expect(screen.getByRole("heading", { name: "Identificador de solicitação inválido" })).toBeDefined();
