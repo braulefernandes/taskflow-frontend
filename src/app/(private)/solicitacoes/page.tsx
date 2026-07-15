@@ -1,10 +1,8 @@
 import { TicketsPage } from "@/components/tickets/tickets-page";
+import { parseTicketFilters, type RawSearchParams } from "@/lib/ticket-list-filters";
 
-type TicketsRouteProps = { searchParams: Promise<{ page?: string | string[] }> };
+type TicketsRouteProps = { searchParams: Promise<RawSearchParams> };
 
 export default async function TicketsRoute({ searchParams }: TicketsRouteProps) {
-  const value = (await searchParams).page;
-  const parsed = Number(Array.isArray(value) ? value[0] : value);
-  const initialPage = Number.isInteger(parsed) && parsed > 0 ? parsed : 1;
-  return <TicketsPage initialPage={initialPage} />;
+  return <TicketsPage initialFilters={parseTicketFilters(await searchParams)} />;
 }

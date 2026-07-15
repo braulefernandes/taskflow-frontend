@@ -50,6 +50,16 @@ describe("private layout", () => {
     expect(screen.getByRole("link", { name: "Perfil" })).toBeDefined();
   });
 
+  it("shows dashboard to managers and hides it from operational roles", async () => {
+    renderShell("MANAGER");
+    await screen.findByText("Ana Silva");
+    expect(screen.getByRole("link", { name: "Dashboard" })).toBeDefined();
+    cleanup();
+    renderShell("AGENT");
+    await screen.findByText("Ana Silva");
+    expect(screen.queryByRole("link", { name: "Dashboard" })).toBeNull();
+  });
+
   it("opens and closes the functional mobile menu", async () => {
     renderShell();
     await screen.findByText("Ana Silva");

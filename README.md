@@ -12,6 +12,7 @@ TanStack Query, React Hook Form, Zod e Vitest.
 - ESLint 9
 - TanStack Query
 - React Hook Form, Zod e `@hookform/resolvers`
+- Recharts
 - Vitest e Testing Library
 
 ## Instalacao
@@ -127,8 +128,53 @@ Authorization: Bearer <token>
 ```
 
 O retorno de `/auth/me` popula o estado publico de sessao com usuario,
-organizacao e membership. A rota `/dashboard` exibe apenas nome, e-mail,
-organizacao, papel e a indicacao de sessao autenticada.
+organizacao e membership. O papel da membership tambem controla o acesso ao
+dashboard gerencial descrito abaixo.
+
+## Dashboard gerencial
+
+A rota privada `/dashboard` e exclusiva para `ADMIN` e `MANAGER` e consome:
+
+```text
+GET /api/v1/dashboard/summary
+GET /api/v1/dashboard/status-distribution
+GET /api/v1/dashboard/priority-distribution
+GET /api/v1/dashboard/recent?limit=5
+GET /api/v1/dashboard/overdue?limit=5
+Authorization: Bearer <token>
+```
+
+O frontend exibe cards para total, pendentes, em andamento, concluidas,
+atrasadas e tempo medio de resolucao. `waiting` e `cancelled` aparecem em um
+resumo secundario para que todos os status retornados sejam representados sem
+confundir `WAITING` com `IN_PROGRESS`.
+
+As distribuicoes por status e prioridade sao renderizadas com Recharts. A
+interface preserva todos os itens enviados pelo backend, inclusive contagens
+zero, traduz os enums e oferece tooltip e legenda. Cada grafico tambem possui
+uma tabela textual visivel, com rotulo e quantidade, para nao comunicar os
+dados apenas por cor ou depender da leitura do SVG.
+
+A lista de solicitacoes recentes mostra titulo, status, prioridade, criacao,
+responsavel quando existente e link para o detalhe. Maiores atrasos mostra
+titulo, prazo, duracao retornada em `overdue_seconds`, prioridade, responsavel e
+link. A ordem de ambas e preservada exatamente como recebida: criacao mais
+recente primeiro e maior atraso primeiro, conforme os contratos do backend.
+Tickets concluidos e cancelados sao excluidos de atrasos pelo backend.
+
+`average_resolution_hours` e exibido em horas, usando diretamente o valor
+calculado pelo backend e limitando apenas a representacao a duas casas
+decimais. Zero aparece como `0 h`; `null` aparece como `Sem dados`. O frontend
+nao recalcula duracoes a partir das datas.
+
+O menu mostra Dashboard somente para administradores e gestores. Acesso direto
+por `AGENT` ou `REQUESTER` redireciona para `/solicitacoes` sem disparar a query;
+o backend continua sendo a fonte de verdade e retorna `403` para esses papeis.
+A pagina possui skeletons, erro com nova tentativa e estados vazios. Summary,
+cada grafico e cada lista usam queries e estados independentes, de modo que uma
+falha parcial nao derruba os demais blocos. No mobile, graficos e listas ficam
+em coluna unica; no desktop, usam grid de duas colunas abaixo dos cards.
+Relatorios, filtros globais e exportacoes permanecem fora deste escopo.
 
 ## Rotas e guard
 
@@ -303,9 +349,10 @@ As rotas privadas compartilham um shell responsivo com sidebar no desktop,
 menu lateral no mobile, header, breadcrumbs, marca TaskFlow e menu do usuario.
 Nome da organizacao e papel vêm da sessao validada por `GET /auth/me`.
 
-A navegacao inicial contém Dashboard e Perfil para todos os papeis. Usuarios e
-Categorias aparecem somente para `ADMIN`; isso controla apenas a interface, e o
-backend permanece como fonte de verdade para autorizacao.
+A navegacao mostra Dashboard para `ADMIN` e `MANAGER` e Perfil para todos os
+papeis. Usuarios e Categorias aparecem somente para `ADMIN`; isso controla
+apenas a interface, e o backend permanece como fonte de verdade para
+autorizacao.
 
 Links e botoes têm foco visivel, menus podem ser fechados com `Escape`, a rota
 ativa usa `aria-current` e os estados de carregamento possuem `role="status"`.
@@ -324,20 +371,51 @@ Os componentes permanecem independentes de dados; a integracao da listagem e
 feita pela rota `/solicitacoes` via:
 
 ```text
-GET /api/v1/tickets?page=1&page_size=20
+GET /api/v1/tickets?search=&status=&priority=&category_id=&assignee_id=&created_from=&created_to=&overdue=&sort_by=&sort_order=&page=&page_size=20
 ```
 
-A resposta esperada possui `page`, `page_size`, `total` e `items`. A pagina e
-sincronizada com `?page=` e cada mudanca gera uma nova chave de query, sem
-filtros locais. O backend continua sendo a fonte de verdade do escopo:
+A resposta esperada possui `page`, `page_size`, `total`, `total_pages` e
+`items`. Filtros e paginacao compoem a chave da query, enquanto o backend
+continua sendo a fonte de verdade do escopo:
 
 - `ADMIN` e `MANAGER`: todas as solicitacoes da organizacao;
 - `AGENT`: solicitacoes criadas por ele ou atribuidas a ele;
 - `REQUESTER`: somente as proprias solicitacoes.
 
-A listagem usa tabela no desktop e cards no mobile, com loading, erro, vazio,
-status, prioridade, responsavel, prazo e atraso. Filtros avancados nao fazem
-parte desta entrega.
+A listagem usa tabela no desktop e cards no mobile, com loading, erro e vazios
+distintos para ausencia de tickets e ausencia de resultados filtrados.
+
+### Filtros e URL da listagem
+
+A rota `/solicitacoes` sincroniza seu estado com a query string publica:
+
+| URL | Backend | Comportamento |
+|---|---|---|
+| `search` | `search` | busca parcial por titulo, com trim e debounce de 400 ms |
+| `status` | `status` | status tipado |
+| `priority` | `priority` | prioridade tipada |
+| `category` | `category_id` | UUID de categoria ativa |
+| `assignee` | `assignee_id` | UUID de responsavel elegivel |
+| `createdFrom` | `created_from` | inicio inclusivo do dia em UTC |
+| `createdTo` | `created_to` | fim inclusivo do dia em UTC |
+| `overdue` | `overdue` | `true` para somente atrasadas |
+| `sortBy` | `sort_by` | `created_at` ou `due_date` |
+| `sortOrder` | `sort_order` | `asc` ou `desc` |
+| `page` | `page` | pagina a partir de 1 |
+
+As ordenacoes disponiveis sao mais recentes, mais antigas, prazo mais proximo
+e prazo mais distante. A alteracao de qualquer filtro volta para a pagina 1;
+a paginacao preserva todos os filtros. A busca usa `router.replace` depois do
+debounce para nao criar uma entrada de historico por tecla; filtros e paginas
+usam `router.push`, permitindo voltar e avancar pelo estado da consulta.
+
+Recarregar ou compartilhar a URL reproduz a mesma requisicao. Parametros
+invalidos, UUIDs malformados, datas inexistentes e enums desconhecidos sao
+ignorados com seguranca antes da chamada ao backend; periodos invertidos sao
+normalizados. O painel mostra a quantidade de filtros ativos e permite limpar
+a busca isoladamente ou restaurar toda a listagem. Categorias e responsaveis
+sao carregados pelas APIs existentes, e o layout se adapta de uma coluna no
+mobile para quatro no desktop.
 
 ### Nova solicitacao
 
@@ -432,5 +510,56 @@ O cancelamento possui confirmacao destrutiva e deixa claro que o registro nao
 e excluido. Administradores e gestores cancelam tickets nao terminais;
 solicitantes cancelam apenas os proprios enquanto pendentes. As mutacoes nao
 fazem atualizacao otimista: depois da resposta, o detalhe recebe o ticket
-atualizado e a listagem e invalidada. Comentarios, historico, motivo de
-cancelamento e dashboard permanecem fora desta entrega.
+atualizado e a listagem e invalidada. Motivo de cancelamento permanece fora
+desta entrega.
+
+### Comentarios da solicitacao
+
+A pagina `/solicitacoes/[id]` lista e cria comentarios sem recarregar a pagina:
+
+```text
+GET  /api/v1/tickets/{ticket_id}/comments
+POST /api/v1/tickets/{ticket_id}/comments
+```
+
+O `POST` envia somente `{ "content": "..." }`. O conteudo e aparado e deve ter
+entre 1 e 5000 caracteres. A resposta contem ID, ticket, conteudo, autor
+(`id`, `name`, `avatar_url`) e datas; e-mail, senha e outros dados sensiveis nao
+sao exibidos. A listagem respeita a ordem cronologica fornecida pelo backend e
+possui estados de carregamento, erro e vazio.
+
+Usuarios com acesso ao ticket podem comentar de acordo com seu papel e vinculo.
+Tickets concluidos aceitam comentarios; tickets cancelados ocultam o formulario
+e o backend confirma a regra, retornando `cancelled_ticket_comment` em caso de
+concorrencia. Depois do sucesso, a query especifica dos comentarios e
+invalidada e recarregada, sem insercao local otimista, duplicacao, reload da
+pagina ou mudanca da posicao da tela.
+
+Limitacoes: nao ha edicao, exclusao, mencoes, anexos, paginacao ou atualizacao
+em tempo real. Esses recursos permanecem fora da entrega de comentarios.
+
+### Timeline do historico
+
+A pagina `/solicitacoes/[id]` tambem consulta o contrato autenticado:
+
+```text
+GET /api/v1/tickets/{ticket_id}/history
+```
+
+O retorno e exibido como timeline responsiva, preservando a ordem cronologica
+crescente fornecida pelo backend: o evento mais antigo permanece no topo. A
+secao possui estados de carregamento, erro com nova tentativa e vazio.
+
+As acoes `CREATED`, `TITLE_CHANGED`, `DESCRIPTION_CHANGED`,
+`CATEGORY_CHANGED`, `PRIORITY_CHANGED`, `DUE_DATE_CHANGED`, `ASSIGNED`,
+`ASSIGNEE_CHANGED`, `ASSIGNEE_REMOVED`, `STATUS_CHANGED`, `COMPLETED`,
+`REOPENED` e `CANCELLED` possuem traducoes centralizadas e nao sao apresentadas
+como codigos crus. Cada evento mostra a descricao da mudanca, autor e data/hora
+no timezone local do navegador.
+
+Status e prioridades reutilizam as traducoes da interface. Datas ISO sao
+formatadas com os helpers compartilhados; entidades no formato `ID | nome`
+mostram somente o nome; valores ausentes recebem textos de contexto como `Sem
+responsavel`, `Sem prazo`, `Sem categoria` ou `Nao informado`. A interface e
+somente leitura: nao reordena, filtra, edita ou remove eventos, e o backend
+continua controlando visibilidade, auditoria e redacao de dados sensiveis.
