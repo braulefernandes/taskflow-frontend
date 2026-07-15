@@ -21,3 +21,7 @@ export function createTicket(payload: TicketCreateRequest) {
     body: payload,
   });
 }
+
+export function getTicket(id: string, signal?: AbortSignal) {
+  return httpClient<TicketSummary>(`/tickets/${id}`, { auth: true, signal });
+}
