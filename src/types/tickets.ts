@@ -62,3 +62,11 @@ export type TicketListResponse = {
 };
 
 export type TicketListParams = { page: number; page_size: number };
+
+export type TicketCreateRequest = {
+  title: string;
+  description: string;
+  category_id: string;
+  priority: TicketPriority;
+  due_date: string | null;
+};

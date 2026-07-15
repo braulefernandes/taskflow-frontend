@@ -338,3 +338,27 @@ filtros locais. O backend continua sendo a fonte de verdade do escopo:
 A listagem usa tabela no desktop e cards no mobile, com loading, erro, vazio,
 status, prioridade, responsavel, prazo e atraso. Filtros avancados nao fazem
 parte desta entrega.
+
+### Nova solicitacao
+
+A rota `/solicitacoes/nova` carrega categorias ativas com `GET /categories` e
+cria uma solicitacao com `POST /tickets`. O formulario envia somente:
+
+```json
+{
+  "title": "Acesso ao financeiro",
+  "description": "Liberar perfil para fechamento mensal.",
+  "category_id": "uuid-da-categoria",
+  "priority": "HIGH",
+  "due_date": "2026-07-20T18:00:00.000Z"
+}
+```
+
+Titulo, descricao e categoria sao obrigatorios; prioridade inicia em `MEDIUM`
+e prazo e opcional. O campo de prazo usa data/hora local, rejeita valores
+passados no cliente e converte o instante para ISO antes do envio. Organizacao,
+solicitante, responsavel, status e datas internas nunca integram o payload.
+
+Apos sucesso, a listagem e invalidada e o usuario segue para
+`/solicitacoes/{id}`. A tela tambem cobre carregamento, erro e ausencia de
+categorias, mensagens por campo, erros da API e prevencao de envio duplicado.
