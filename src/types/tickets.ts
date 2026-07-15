@@ -58,10 +58,33 @@ export type TicketListResponse = {
   page: number;
   page_size: number;
   total: number;
+  total_pages?: number;
   items: TicketSummary[];
 };
 
-export type TicketListParams = { page: number; page_size: number };
+export type TicketSortBy = "created_at" | "due_date";
+export type TicketSortOrder = "asc" | "desc";
+export type TicketListParams = {
+  page: number;
+  page_size: number;
+  search?: string;
+  status?: TicketStatus;
+  priority?: TicketPriority;
+  category_id?: string;
+  assignee_id?: string;
+  created_from?: string;
+  created_to?: string;
+  overdue?: boolean;
+  sort_by?: TicketSortBy;
+  sort_order?: TicketSortOrder;
+};
+
+export type TicketListUrlFilters = Omit<TicketListParams, "page_size" | "created_from" | "created_to" | "sort_by" | "sort_order"> & {
+  createdFrom?: string;
+  createdTo?: string;
+  sort_by: TicketSortBy;
+  sort_order: TicketSortOrder;
+};
 
 export type TicketCreateRequest = {
   title: string;

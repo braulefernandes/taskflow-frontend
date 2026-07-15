@@ -4,10 +4,8 @@ import type { TicketAssigneeUpdateRequest, TicketCreateRequest, TicketListParams
 export const ticketsQueryKey = ["tickets"] as const;
 
 export function listTickets(params: TicketListParams, signal?: AbortSignal) {
-  const search = new URLSearchParams({
-    page: String(params.page),
-    page_size: String(params.page_size),
-  });
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) if (value !== undefined) search.set(key, String(value));
   return httpClient<TicketListResponse>(`/tickets?${search.toString()}`, {
     auth: true,
     signal,
