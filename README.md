@@ -320,4 +320,21 @@ skeleton, modal de confirmacao e campos `select`, `textarea` e data/hora.
 Tipos e enums ficam em `src/types/tickets.ts`. Traducoes e formatacao de datas
 ficam em `src/lib/ticket-formatters.ts`. Datas UTC recebidas nao sao alteradas;
 os helpers criam somente uma representacao no timezone local do navegador.
-Esta camada nao busca dados e nao implementa paginas ou integracao de tickets.
+Os componentes permanecem independentes de dados; a integracao da listagem e
+feita pela rota `/solicitacoes` via:
+
+```text
+GET /api/v1/tickets?page=1&page_size=20
+```
+
+A resposta esperada possui `page`, `page_size`, `total` e `items`. A pagina e
+sincronizada com `?page=` e cada mudanca gera uma nova chave de query, sem
+filtros locais. O backend continua sendo a fonte de verdade do escopo:
+
+- `ADMIN` e `MANAGER`: todas as solicitacoes da organizacao;
+- `AGENT`: solicitacoes criadas por ele ou atribuidas a ele;
+- `REQUESTER`: somente as proprias solicitacoes.
+
+A listagem usa tabela no desktop e cards no mobile, com loading, erro, vazio,
+status, prioridade, responsavel, prazo e atraso. Filtros avancados nao fazem
+parte desta entrega.
