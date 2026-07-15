@@ -70,3 +70,11 @@ export type TicketCreateRequest = {
   priority: TicketPriority;
   due_date: string | null;
 };
+
+export type TicketUpdateRequest = Partial<{
+  title: string;
+  description: string;
+  category_id: string;
+  priority: TicketPriority;
+  due_date: string | null;
+}>;
