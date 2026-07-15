@@ -320,4 +320,117 @@ skeleton, modal de confirmacao e campos `select`, `textarea` e data/hora.
 Tipos e enums ficam em `src/types/tickets.ts`. Traducoes e formatacao de datas
 ficam em `src/lib/ticket-formatters.ts`. Datas UTC recebidas nao sao alteradas;
 os helpers criam somente uma representacao no timezone local do navegador.
-Esta camada nao busca dados e nao implementa paginas ou integracao de tickets.
+Os componentes permanecem independentes de dados; a integracao da listagem e
+feita pela rota `/solicitacoes` via:
+
+```text
+GET /api/v1/tickets?page=1&page_size=20
+```
+
+A resposta esperada possui `page`, `page_size`, `total` e `items`. A pagina e
+sincronizada com `?page=` e cada mudanca gera uma nova chave de query, sem
+filtros locais. O backend continua sendo a fonte de verdade do escopo:
+
+- `ADMIN` e `MANAGER`: todas as solicitacoes da organizacao;
+- `AGENT`: solicitacoes criadas por ele ou atribuidas a ele;
+- `REQUESTER`: somente as proprias solicitacoes.
+
+A listagem usa tabela no desktop e cards no mobile, com loading, erro, vazio,
+status, prioridade, responsavel, prazo e atraso. Filtros avancados nao fazem
+parte desta entrega.
+
+### Nova solicitacao
+
+A rota `/solicitacoes/nova` carrega categorias ativas com `GET /categories` e
+cria uma solicitacao com `POST /tickets`. O formulario envia somente:
+
+```json
+{
+  "title": "Acesso ao financeiro",
+  "description": "Liberar perfil para fechamento mensal.",
+  "category_id": "uuid-da-categoria",
+  "priority": "HIGH",
+  "due_date": "2026-07-20T18:00:00.000Z"
+}
+```
+
+Titulo, descricao e categoria sao obrigatorios; prioridade inicia em `MEDIUM`
+e prazo e opcional. O campo de prazo usa data/hora local, rejeita valores
+passados no cliente e converte o instante para ISO antes do envio. Organizacao,
+solicitante, responsavel, status e datas internas nunca integram o payload.
+
+Apos sucesso, a listagem e invalidada e o usuario segue para
+`/solicitacoes/{id}`. A tela tambem cobre carregamento, erro e ausencia de
+categorias, mensagens por campo, erros da API e prevencao de envio duplicado.
+
+### Detalhes da solicitacao
+
+A rota `/solicitacoes/[id]` consulta `GET /tickets/{id}` e organiza a resposta
+em resumo, descricao, responsaveis, datas e acoes. Sao exibidos categoria,
+organizacao, status, prioridade, solicitante, responsavel, prazo, datas
+operacionais e atraso com duracao textual.
+
+IDs invalidos sao recusados antes da requisicao. A tela diferencia loading,
+nao encontrado/fora do escopo, acesso negado, rede e erro inesperado. Como o
+backend oculta recursos externos, uma resposta `404` nao revela se o ticket
+existe em outra organizacao.
+
+As acoes visiveis refletem papel e estado: administradores e gestores recebem
+as opcoes administrativas validas; agentes veem alteracao de status apenas
+quando atribuidos; solicitantes podem editar e cancelar somente ticket proprio,
+pendente e sem responsavel. Estados concluidos e cancelados ocultam operacoes
+incompativeis. Nesta branch, as acoes sao apenas links para os fluxos futuros;
+nenhuma mutacao foi implementada.
+
+### Edicao da solicitacao
+
+A rota `/solicitacoes/[id]/edit` carrega o ticket e as categorias ativas, e
+envia uma atualizacao parcial com `PATCH /tickets/{id}`. O formulario permite
+alterar titulo, descricao e categoria; prioridade e prazo aparecem somente
+quando o contrato permite planejamento. Apenas campos modificados integram o
+payload, sem organizacao, solicitante, responsavel, status ou datas internas.
+
+Administradores e gestores podem editar os dados descritivos; em tickets
+concluidos, prioridade e prazo permanecem bloqueados. Solicitantes podem editar
+o proprio ticket somente quando pendente e sem responsavel, sem acesso aos
+campos de planejamento. Agentes e usuarios fora do escopo nao recebem o
+formulario, e tickets cancelados nao podem ser editados. O backend permanece
+como fonte de verdade para todas as permissoes.
+
+O prazo usa data/hora local e e convertido para ISO somente quando alterado.
+A categoria atual continua identificada caso tenha sido inativada, mas as novas
+opcoes sao exclusivamente categorias ativas. Apos sucesso, os caches do detalhe
+e da listagem sao atualizados/invalidados e a navegacao retorna aos detalhes.
+Atribuicao e mudanca de status nao fazem parte deste fluxo.
+
+### Atribuicao, status e cancelamento
+
+Os detalhes da solicitacao oferecem acoes operacionais usando os contratos
+`PATCH /tickets/{id}/assignee`, `PATCH /tickets/{id}/status`,
+`PATCH /tickets/{id}` e `POST /tickets/{id}/cancel`. Administradores e gestores
+podem atribuir, trocar e remover responsaveis, alterar prioridade e prazo e
+cancelar tickets nao terminais. A lista de responsaveis consulta memberships
+ativas e apresenta nome, e-mail, papel e status; solicitantes e membros
+inativos ou com papel `REQUESTER` nao sao oferecidos.
+
+A interface exibe somente as transicoes documentadas e permitidas pelo papel:
+
+```text
+PENDING     -> IN_PROGRESS | WAITING
+IN_PROGRESS -> WAITING | COMPLETED
+WAITING     -> IN_PROGRESS | COMPLETED
+COMPLETED   -> IN_PROGRESS (reabertura)
+CANCELLED   -> nenhuma
+```
+
+Estados operacionais exigem responsavel. Agentes alteram status apenas quando
+o ticket esta atribuido a eles; solicitantes nao alteram status. Prioridade e
+prazo, inclusive remocao do prazo com `null`, ficam restritos a administradores
+e gestores e sao bloqueados em tickets concluidos ou cancelados.
+
+O cancelamento possui confirmacao destrutiva e deixa claro que o registro nao
+e excluido. Administradores e gestores cancelam tickets nao terminais;
+solicitantes cancelam apenas os proprios enquanto pendentes. As mutacoes nao
+fazem atualizacao otimista: depois da resposta, o detalhe recebe o ticket
+atualizado e a listagem e invalidada. Comentarios, historico, motivo de
+cancelamento e dashboard permanecem fora desta entrega.

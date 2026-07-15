@@ -9,6 +9,7 @@ type PrivateShellProps = { children: ReactNode };
 
 const navigation = [
   { label: "Dashboard", href: "/dashboard", icon: HomeIcon },
+  { label: "SolicitaÃ§Ãµes", href: "/solicitacoes", icon: TicketIcon },
   { label: "Usuários", href: "/usuarios", icon: UsersIcon, admin: true },
   { label: "Categorias", href: "/categorias", icon: TagIcon, admin: true },
   { label: "Perfil", href: "/perfil", icon: UserIcon },
@@ -16,6 +17,7 @@ const navigation = [
 
 const routeLabels: Record<string, string> = {
   "/dashboard": "Dashboard",
+  "/solicitacoes": "SolicitaÃ§Ãµes",
   "/usuarios": "Usuários",
   "/categorias": "Categorias",
   "/perfil": "Perfil",
@@ -141,6 +143,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
 function Avatar({ name }: { name: string }) { const initials = name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase(); return <span aria-hidden="true" className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700">{initials}</span>; }
 function Icon({ children }: { children: ReactNode }) { return <svg aria-hidden="true" className="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">{children}</svg>; }
 function HomeIcon() { return <Icon><path strokeLinecap="round" strokeLinejoin="round" d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></Icon>; }
+function TicketIcon() { return <Icon><path strokeLinecap="round" strokeLinejoin="round" d="M5 4h14a2 2 0 0 1 2 2v3a3 3 0 0 0 0 6v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a3 3 0 0 0 0-6V6a2 2 0 0 1 2-2Z" /><path strokeLinecap="round" d="M9 8h6M9 12h6M9 16h3" /></Icon>; }
 function UsersIcon() { return <Icon><path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></Icon>; }
 function TagIcon() { return <Icon><path strokeLinecap="round" strokeLinejoin="round" d="M20.6 13.6 11 23l-10-10V3h10l9.6 9.6a.7.7 0 0 1 0 1ZM6.5 8A1.5 1.5 0 1 0 6.5 5a1.5 1.5 0 0 0 0 3Z" /></Icon>; }
 function UserIcon() { return <Icon><path strokeLinecap="round" strokeLinejoin="round" d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" /></Icon>; }
