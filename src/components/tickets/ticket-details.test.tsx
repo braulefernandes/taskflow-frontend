@@ -1,7 +1,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TicketDetails } from "@/components/tickets/ticket-details";
+import { availableTicketActions, TicketDetails } from "@/components/tickets/ticket-details";
 import { ApiError } from "@/lib/api-error";
 import { createQueryClient } from "@/lib/query-client";
 import { useSession } from "@/providers/session-provider";
@@ -91,7 +91,7 @@ describe("detalhes da solicitação", () => {
     await screen.findByText("Concluída");
     expect(screen.queryByText(/Atrasada/)).toBeNull();
     expect(screen.getByRole("link", { name: "Editar" })).toBeDefined();
-    expect(screen.getByRole("link", { name: "Alterar status" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Reabrir" })).toBeDefined();
     expect(screen.queryByRole("link", { name: "Cancelar solicitação" })).toBeNull();
   });
 
@@ -108,12 +108,9 @@ describe("detalhes da solicitação", () => {
     ["MANAGER", "user-manager", ["Editar", "Atribuir responsável", "Alterar status", "Cancelar solicitação"]],
     ["AGENT", "user-2", ["Alterar status"]],
     ["REQUESTER", "user-1", []],
-  ] as const)("exibe ações permitidas para %s", async (role, userId, actions) => {
-    vi.mocked(useSession).mockReturnValue(session(role, userId));
-    setup();
-    await screen.findByText("Acesso ao financeiro");
-    for (const action of actions) expect(screen.getByRole("link", { name: action })).toBeDefined();
-    expect(screen.getAllByRole("link").filter((link) => ["Editar", "Atribuir responsável", "Alterar status", "Cancelar solicitação"].includes(link.textContent ?? ""))).toHaveLength(actions.length);
+  ] as const)("calcula ações permitidas para %s", (role, userId, labels) => {
+    const map = { edit: "Editar", assign: "Atribuir responsável", status: "Alterar status", cancel: "Cancelar solicitação" } as const;
+    expect(availableTicketActions(ticket, role, userId).map((action) => map[action])).toEqual(labels);
   });
 
   it("solicitante pode editar e cancelar somente pendente próprio sem responsável", async () => {
@@ -121,8 +118,8 @@ describe("detalhes da solicitação", () => {
     vi.mocked(getTicket).mockResolvedValue({ ...ticket, status: "PENDING", assignee: null });
     setup();
     expect(await screen.findByRole("link", { name: "Editar" })).toBeDefined();
-    expect(screen.getByRole("link", { name: "Cancelar solicitação" })).toBeDefined();
-    expect(screen.queryByRole("link", { name: "Alterar status" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Cancelar solicitação" })).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Alterar status" })).toBeNull();
   });
 
   it("usa grid responsivo sem largura fixa", async () => {

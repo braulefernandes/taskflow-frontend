@@ -402,3 +402,35 @@ A categoria atual continua identificada caso tenha sido inativada, mas as novas
 opcoes sao exclusivamente categorias ativas. Apos sucesso, os caches do detalhe
 e da listagem sao atualizados/invalidados e a navegacao retorna aos detalhes.
 Atribuicao e mudanca de status nao fazem parte deste fluxo.
+
+### Atribuicao, status e cancelamento
+
+Os detalhes da solicitacao oferecem acoes operacionais usando os contratos
+`PATCH /tickets/{id}/assignee`, `PATCH /tickets/{id}/status`,
+`PATCH /tickets/{id}` e `POST /tickets/{id}/cancel`. Administradores e gestores
+podem atribuir, trocar e remover responsaveis, alterar prioridade e prazo e
+cancelar tickets nao terminais. A lista de responsaveis consulta memberships
+ativas e apresenta nome, e-mail, papel e status; solicitantes e membros
+inativos ou com papel `REQUESTER` nao sao oferecidos.
+
+A interface exibe somente as transicoes documentadas e permitidas pelo papel:
+
+```text
+PENDING     -> IN_PROGRESS | WAITING
+IN_PROGRESS -> WAITING | COMPLETED
+WAITING     -> IN_PROGRESS | COMPLETED
+COMPLETED   -> IN_PROGRESS (reabertura)
+CANCELLED   -> nenhuma
+```
+
+Estados operacionais exigem responsavel. Agentes alteram status apenas quando
+o ticket esta atribuido a eles; solicitantes nao alteram status. Prioridade e
+prazo, inclusive remocao do prazo com `null`, ficam restritos a administradores
+e gestores e sao bloqueados em tickets concluidos ou cancelados.
+
+O cancelamento possui confirmacao destrutiva e deixa claro que o registro nao
+e excluido. Administradores e gestores cancelam tickets nao terminais;
+solicitantes cancelam apenas os proprios enquanto pendentes. As mutacoes nao
+fazem atualizacao otimista: depois da resposta, o detalhe recebe o ticket
+atualizado e a listagem e invalidada. Comentarios, historico, motivo de
+cancelamento e dashboard permanecem fora desta entrega.
