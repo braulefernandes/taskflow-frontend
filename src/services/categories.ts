@@ -7,6 +7,10 @@ export function listCategories(signal?: AbortSignal) {
   return httpClient<Category[]>("/categories?include_inactive=true", { auth: true, signal });
 }
 
+export function listActiveCategories(signal?: AbortSignal) {
+  return httpClient<Category[]>("/categories", { auth: true, signal });
+}
+
 export function createCategory(payload: CategoryPayload) {
   return httpClient<Category, CategoryPayload>("/categories", { method: "POST", auth: true, body: payload });
 }

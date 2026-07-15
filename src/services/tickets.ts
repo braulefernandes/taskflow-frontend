@@ -1,5 +1,5 @@
 import { httpClient } from "@/lib/http-client";
-import type { TicketListParams, TicketListResponse } from "@/types/tickets";
+import type { TicketCreateRequest, TicketListParams, TicketListResponse, TicketSummary } from "@/types/tickets";
 
 export const ticketsQueryKey = ["tickets"] as const;
 
@@ -11,5 +11,13 @@ export function listTickets(params: TicketListParams, signal?: AbortSignal) {
   return httpClient<TicketListResponse>(`/tickets?${search.toString()}`, {
     auth: true,
     signal,
+  });
+}
+
+export function createTicket(payload: TicketCreateRequest) {
+  return httpClient<TicketSummary, TicketCreateRequest>("/tickets", {
+    method: "POST",
+    auth: true,
+    body: payload,
   });
 }
