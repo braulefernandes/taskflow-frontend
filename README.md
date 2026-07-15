@@ -362,3 +362,22 @@ solicitante, responsavel, status e datas internas nunca integram o payload.
 Apos sucesso, a listagem e invalidada e o usuario segue para
 `/solicitacoes/{id}`. A tela tambem cobre carregamento, erro e ausencia de
 categorias, mensagens por campo, erros da API e prevencao de envio duplicado.
+
+### Detalhes da solicitacao
+
+A rota `/solicitacoes/[id]` consulta `GET /tickets/{id}` e organiza a resposta
+em resumo, descricao, responsaveis, datas e acoes. Sao exibidos categoria,
+organizacao, status, prioridade, solicitante, responsavel, prazo, datas
+operacionais e atraso com duracao textual.
+
+IDs invalidos sao recusados antes da requisicao. A tela diferencia loading,
+nao encontrado/fora do escopo, acesso negado, rede e erro inesperado. Como o
+backend oculta recursos externos, uma resposta `404` nao revela se o ticket
+existe em outra organizacao.
+
+As acoes visiveis refletem papel e estado: administradores e gestores recebem
+as opcoes administrativas validas; agentes veem alteracao de status apenas
+quando atribuidos; solicitantes podem editar e cancelar somente ticket proprio,
+pendente e sem responsavel. Estados concluidos e cancelados ocultam operacoes
+incompativeis. Nesta branch, as acoes sao apenas links para os fluxos futuros;
+nenhuma mutacao foi implementada.
