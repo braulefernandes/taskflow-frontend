@@ -6,14 +6,14 @@ export default function Home() {
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center gap-8 px-6 py-16">
       <section className="max-w-2xl space-y-4">
         <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
-          Fundacao frontend
+          Fundação frontend
         </p>
         <h1 className="text-4xl font-semibold text-slate-950">
-          TaskFlow esta pronto para receber as proximas telas.
+          TaskFlow está pronto para receber as próximas telas.
         </h1>
         <p className="text-base leading-7 text-slate-600">
           App Router, providers globais, cliente HTTP e estrutura inicial de
-          rotas foram preparados sem implementar autenticacao ou dashboard real.
+          rotas foram preparados sem implementar autenticação ou dashboard real.
         </p>
       </section>
 

@@ -73,13 +73,13 @@ function fillValidForm() {
   fireEvent.change(screen.getByLabelText("E-mail"), {
     target: { value: "ana@example.com" },
   });
-  fireEvent.change(screen.getByLabelText("Nome da organizacao"), {
+  fireEvent.change(screen.getByLabelText("Nome da organização"), {
     target: { value: "Acme Suporte" },
   });
   fireEvent.change(screen.getByLabelText("Senha"), {
     target: { value: "Senha123" },
   });
-  fireEvent.change(screen.getByLabelText("Confirmacao de senha"), {
+  fireEvent.change(screen.getByLabelText("Confirmação de senha"), {
     target: { value: "Senha123" },
   });
 }
@@ -108,9 +108,9 @@ describe("CadastroPage", () => {
     ).toBeDefined();
     expect(screen.getByLabelText("Nome")).toBeDefined();
     expect(screen.getByLabelText("E-mail")).toBeDefined();
-    expect(screen.getByLabelText("Nome da organizacao")).toBeDefined();
+    expect(screen.getByLabelText("Nome da organização")).toBeDefined();
     expect(screen.getByLabelText("Senha")).toBeDefined();
-    expect(screen.getByLabelText("Confirmacao de senha")).toBeDefined();
+    expect(screen.getByLabelText("Confirmação de senha")).toBeDefined();
     expect(screen.getByRole("link", { name: "Entrar" })).toBeDefined();
   });
 
@@ -119,7 +119,7 @@ describe("CadastroPage", () => {
 
     await submitForm();
 
-    expect(await screen.findAllByText("Campo obrigatorio.")).toHaveLength(5);
+    expect(await screen.findAllByText("Campo obrigatório.")).toHaveLength(5);
     expect(document.activeElement).toBe(screen.getByLabelText("Nome"));
     expect(registerAccount).not.toHaveBeenCalled();
   });
@@ -133,7 +133,7 @@ describe("CadastroPage", () => {
     });
     await submitForm();
 
-    expect(await screen.findByText("Informe um e-mail valido.")).toBeDefined();
+    expect(await screen.findByText("Informe um e-mail válido.")).toBeDefined();
     expect(registerAccount).not.toHaveBeenCalled();
   });
 
@@ -144,14 +144,14 @@ describe("CadastroPage", () => {
     fireEvent.change(screen.getByLabelText("Senha"), {
       target: { value: "senhafraca" },
     });
-    fireEvent.change(screen.getByLabelText("Confirmacao de senha"), {
+    fireEvent.change(screen.getByLabelText("Confirmação de senha"), {
       target: { value: "senhafraca" },
     });
     await submitForm();
 
     expect(
       await screen.findByText(
-        "A senha deve ter entre 8 e 128 caracteres e conter letras e numeros.",
+        "A senha deve ter entre 8 e 128 caracteres e conter letras e números.",
       ),
     ).toBeDefined();
     expect(registerAccount).not.toHaveBeenCalled();
@@ -161,13 +161,13 @@ describe("CadastroPage", () => {
     renderCadastro();
 
     fillValidForm();
-    fireEvent.change(screen.getByLabelText("Confirmacao de senha"), {
+    fireEvent.change(screen.getByLabelText("Confirmação de senha"), {
       target: { value: "Senha124" },
     });
     await submitForm();
 
     expect(
-      await screen.findByText("As senhas informadas nao coincidem."),
+      await screen.findByText("As senhas informadas não coincidem."),
     ).toBeDefined();
     expect(registerAccount).not.toHaveBeenCalled();
   });
@@ -200,7 +200,7 @@ describe("CadastroPage", () => {
       new ApiError({
         status: 409,
         code: "email_already_registered",
-        message: "E-mail ja cadastrado.",
+        message: "E-mail já cadastrado.",
       }),
     );
     renderCadastro();
@@ -210,10 +210,10 @@ describe("CadastroPage", () => {
 
     expect(
       await screen.findByText(
-        "Este e-mail ja esta cadastrado. Entre ou use outro e-mail.",
+        "Este e-mail já está cadastrado. Entre ou use outro e-mail.",
       ),
     ).toBeDefined();
-    expect(await screen.findByText("Este e-mail ja esta cadastrado.")).toBeDefined();
+    expect(await screen.findByText("Este e-mail já está cadastrado.")).toBeDefined();
   });
 
   it("handles validation errors from the API", async () => {
@@ -221,7 +221,7 @@ describe("CadastroPage", () => {
       new ApiError({
         status: 422,
         code: "validation_error",
-        message: "Dados de entrada invalidos.",
+        message: "Dados de entrada inválidos.",
       }),
     );
     renderCadastro();
@@ -230,7 +230,7 @@ describe("CadastroPage", () => {
     await submitForm();
 
     expect(
-      await screen.findByText("Confira os campos do formulario e tente novamente."),
+      await screen.findByText("Confira os campos do formulário e tente novamente."),
     ).toBeDefined();
   });
 
@@ -249,7 +249,7 @@ describe("CadastroPage", () => {
 
     expect(
       await screen.findByText(
-        "Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.",
+        "Não foi possível concluir o cadastro agora. Tente novamente em instantes.",
       ),
     ).toBeDefined();
   });
@@ -263,7 +263,7 @@ describe("CadastroPage", () => {
 
     expect(
       await screen.findByText(
-        "Nao foi possivel conectar ao servidor. Verifique sua conexao e tente novamente.",
+        "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.",
       ),
     ).toBeDefined();
   });

@@ -17,21 +17,21 @@ import { useSession } from "@/providers/session-provider";
 function getLoginErrorMessage(error: unknown) {
   if (isApiError(error)) {
     if (error.status === 401 || error.code === "invalid_credentials") {
-      return "E-mail ou senha invalidos.";
+      return "E-mail ou senha inválidos.";
     }
 
     if (error.status === 422 || error.code === "validation_error") {
-      return "Confira os campos do formulario e tente novamente.";
+      return "Confira os campos do formulário e tente novamente.";
     }
 
-    return "Nao foi possivel entrar agora. Tente novamente em instantes.";
+    return "Não foi possível entrar agora. Tente novamente em instantes.";
   }
 
   if (error instanceof TypeError) {
-    return "Nao foi possivel conectar ao servidor. Verifique sua conexao e tente novamente.";
+    return "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.";
   }
 
-  return "Nao foi possivel entrar agora. Tente novamente em instantes.";
+  return "Não foi possível entrar agora. Tente novamente em instantes.";
 }
 
 export function LoginForm() {
@@ -66,7 +66,7 @@ export function LoginForm() {
   if (status === "loading" || status === "authenticated") {
     return (
       <div className="mt-8">
-        <Loading label="Validando sessao" />
+        <Loading label="Validando sessão" />
       </div>
     );
   }
@@ -122,7 +122,7 @@ export function LoginForm() {
       <p className="text-center text-sm"><Link className="font-medium text-slate-950 underline" href="/recuperar-senha">Esqueci minha senha</Link></p>
 
       <p className="text-center text-sm text-slate-600">
-        Ainda nao tem conta?{" "}
+        Ainda não tem conta?{" "}
         <Link className="font-medium text-slate-950 underline" href="/cadastro">
           Criar conta
         </Link>

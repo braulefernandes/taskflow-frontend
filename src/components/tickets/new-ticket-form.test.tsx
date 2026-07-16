@@ -55,7 +55,7 @@ describe("nova solicitação", () => {
     expect(screen.queryByRole("button", { name: "Criar solicitação" })).toBeNull();
   });
 
-  it("valida campos obrigatórios", async () => {
+  it("válida campos obrigatórios", async () => {
     setup();
     fireEvent.click(await screen.findByRole("button", { name: "Criar solicitação" }));
     expect(await screen.findByText("Informe o título.")).toBeDefined();
@@ -130,7 +130,7 @@ describe("nova solicitação", () => {
     expect(await screen.findByText("Não foi possível criar a solicitação. Tente novamente.")).toBeDefined();
   });
 
-  it("invalida a listagem, mostra feedback e redireciona ao detalhe", async () => {
+  it("inválida a listagem, mostra feedback e redireciona ao detalhe", async () => {
     const { client } = setup();
     const invalidate = vi.spyOn(client, "invalidateQueries");
     await fill();

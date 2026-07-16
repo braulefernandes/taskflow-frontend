@@ -27,7 +27,7 @@ describe("ticket formatters", () => {
   });
 
   it("lida com datas inválidas", () => {
-    expect(formatDate("invalida")).toBe("Data inválida");
-    expect(formatDueDate("invalida")).toBe("Prazo inválido");
+    expect(formatDate("inválida")).toBe("Data inválida");
+    expect(formatDueDate("inválida")).toBe("Prazo inválido");
   });
 });

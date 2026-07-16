@@ -10,7 +10,7 @@ import { Skeleton, TicketCardSkeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 
 describe("reusable ticket UI", () => {
-  it("pagina usando botões acessíveis e respeita limites", () => {
+  it("página usando botões acessíveis e respeita limites", () => {
     const change = vi.fn();
     render(<Pagination onPageChange={change} page={2} pageSize={10} total={25} />);
     fireEvent.click(screen.getByRole("button", { name: "Anterior" }));

@@ -11,7 +11,7 @@ export default function CadastroPage() {
           Crie sua conta
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          Cadastre seu usuario e a organizacao inicial para comecar a
+          Cadastre seu usuário e a organização inicial para comecar a
           configurar o TaskFlow.
         </p>
       </div>

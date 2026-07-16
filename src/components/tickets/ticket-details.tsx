@@ -45,7 +45,7 @@ export function availableTicketActions(ticket: TicketSummary, role: AuthMembersh
 
 function errorContent(error: unknown) {
   if (isApiError(error) && error.status === 404) return { title: "Solicitação não encontrada", message: "Ela não existe ou não está disponível no seu escopo." };
-  if (isApiError(error) && error.status === 403) return { title: "Acesso negado", message: "Você não possui permissão para visualizar esta solicitação." };
+  if (isApiError(error) && error.status === 403) return { title: "Acesso negado", message: "Você não possui permissão para visualizar está solicitação." };
   if (error instanceof TypeError) return { title: "Sem conexão com o servidor", message: "Verifique sua conexão e tente novamente." };
   return { title: "Não foi possível carregar a solicitação", message: "Tente novamente em instantes." };
 }
