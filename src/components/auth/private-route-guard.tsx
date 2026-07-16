@@ -22,7 +22,7 @@ export function PrivateRouteGuard({ children }: PrivateRouteGuardProps) {
   if (status === "loading" || status === "unauthenticated") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white px-6">
-        <Loading label="Validando sessao" />
+        <Loading label="Validando sessão" />
       </main>
     );
   }

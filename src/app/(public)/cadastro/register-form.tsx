@@ -26,21 +26,21 @@ const defaultValues: RegisterFormValues = {
 function getRegisterErrorMessage(error: unknown) {
   if (isApiError(error)) {
     if (error.status === 409 && error.code === "email_already_registered") {
-      return "Este e-mail ja esta cadastrado. Entre ou use outro e-mail.";
+      return "Este e-mail já está cadastrado. Entre ou use outro e-mail.";
     }
 
     if (error.status === 422 || error.code === "validation_error") {
-      return "Confira os campos do formulario e tente novamente.";
+      return "Confira os campos do formulário e tente novamente.";
     }
 
-    return "Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.";
+    return "Não foi possível concluir o cadastro agora. Tente novamente em instantes.";
   }
 
   if (error instanceof TypeError) {
-    return "Nao foi possivel conectar ao servidor. Verifique sua conexao e tente novamente.";
+    return "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.";
   }
 
-  return "Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.";
+  return "Não foi possível concluir o cadastro agora. Tente novamente em instantes.";
 }
 
 export function RegisterForm() {
@@ -70,7 +70,7 @@ export function RegisterForm() {
         error.code === "email_already_registered"
       ) {
         setError("email", {
-          message: "Este e-mail ja esta cadastrado.",
+          message: "Este e-mail já está cadastrado.",
           type: "server",
         });
       }
@@ -121,7 +121,7 @@ export function RegisterForm() {
 
       <FormField
         id="organizationName"
-        label="Nome da organizacao"
+        label="Nome da organização"
         error={errors.organizationName?.message}
       >
         <Input
@@ -136,7 +136,7 @@ export function RegisterForm() {
         id="password"
         label="Senha"
         error={errors.password?.message}
-        hint="Use de 8 a 128 caracteres, com letras e numeros."
+        hint="Use de 8 a 128 caracteres, com letras e números."
       >
         <Input
           id="password"
@@ -149,7 +149,7 @@ export function RegisterForm() {
 
       <FormField
         id="passwordConfirmation"
-        label="Confirmacao de senha"
+        label="Confirmação de senha"
         error={errors.passwordConfirmation?.message}
       >
         <Input
@@ -166,7 +166,7 @@ export function RegisterForm() {
       </Button>
 
       <p className="text-center text-sm text-slate-600">
-        Ja tem uma conta?{" "}
+        Já tem uma conta?{" "}
         <Link className="font-medium text-slate-950 underline" href="/login">
           Entrar
         </Link>

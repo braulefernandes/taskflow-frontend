@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-const requiredMessage = "Campo obrigatorio.";
+const requiredMessage = "Campo obrigatório.";
 const passwordMessage =
-  "A senha deve ter entre 8 e 128 caracteres e conter letras e numeros.";
+  "A senha deve ter entre 8 e 128 caracteres e conter letras e números.";
 
 export const registerSchema = z
   .object({
@@ -10,19 +10,19 @@ export const registerSchema = z
       .string()
       .trim()
       .min(1, requiredMessage)
-      .max(255, "Informe no maximo 255 caracteres."),
+      .max(255, "Informe no máximo 255 caracteres."),
     email: z
       .string()
       .trim()
       .toLowerCase()
       .min(1, requiredMessage)
-      .email("Informe um e-mail valido.")
-      .max(320, "Informe no maximo 320 caracteres."),
+      .email("Informe um e-mail válido.")
+      .max(320, "Informe no máximo 320 caracteres."),
     organizationName: z
       .string()
       .trim()
       .min(1, requiredMessage)
-      .max(255, "Informe no maximo 255 caracteres."),
+      .max(255, "Informe no máximo 255 caracteres."),
     password: z
       .string()
       .min(1, requiredMessage)
@@ -33,7 +33,7 @@ export const registerSchema = z
     passwordConfirmation: z.string().min(1, requiredMessage),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
-    message: "As senhas informadas nao coincidem.",
+    message: "As senhas informadas não coincidem.",
     path: ["passwordConfirmation"],
   });
 

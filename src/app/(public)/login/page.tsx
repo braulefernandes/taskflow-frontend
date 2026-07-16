@@ -13,7 +13,7 @@ export default function LoginPage() {
           Entre na sua conta
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          Use seu e-mail e senha para acessar sua organizacao no TaskFlow.
+          Use seu e-mail e senha para acessar sua organização no TaskFlow.
         </p>
       </div>
       <Suspense fallback={<Loading label="Carregando login" />}>

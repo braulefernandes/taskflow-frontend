@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const requiredMessage = "Campo obrigatorio.";
+const requiredMessage = "Campo obrigatório.";
 
 export const loginSchema = z.object({
   email: z
@@ -8,12 +8,12 @@ export const loginSchema = z.object({
     .trim()
     .toLowerCase()
     .min(1, requiredMessage)
-    .email("Informe um e-mail valido.")
-    .max(320, "Informe no maximo 320 caracteres."),
+    .email("Informe um e-mail válido.")
+    .max(320, "Informe no máximo 320 caracteres."),
   password: z
     .string()
     .min(1, requiredMessage)
-    .max(128, "Informe no maximo 128 caracteres."),
+    .max(128, "Informe no máximo 128 caracteres."),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

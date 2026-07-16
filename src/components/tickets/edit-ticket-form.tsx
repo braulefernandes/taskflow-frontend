@@ -45,7 +45,7 @@ function updateError(error: unknown) {
     if (error.code === "due_date_in_past") return "O prazo precisa estar no futuro.";
     if (error.code === "terminal_ticket_planning_update") return "Prioridade e prazo não podem ser alterados neste estado.";
     if (error.code === "cancelled_ticket_edit") return "Solicitações canceladas não podem ser editadas.";
-    if (error.status === 403 || error.code === "insufficient_role") return "Você não possui permissão para editar esta solicitação.";
+    if (error.status === 403 || error.code === "insufficient_role") return "Você não possui permissão para editar está solicitação.";
     if (error.status === 422 || error.code === "validation_error") return "Confira os campos e tente novamente.";
   }
   if (error instanceof TypeError) return "Não foi possível conectar ao servidor.";

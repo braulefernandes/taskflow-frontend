@@ -33,8 +33,8 @@ function actionError(error: unknown) {
     if (error.code === "due_date_in_past") return "O prazo precisa estar no futuro.";
     if (error.code?.includes("inactive")) return "O responsável selecionado não está ativo.";
     if (error.code === "assignee_role_not_allowed") return "O papel selecionado não pode ser responsável.";
-    if (error.status === 403) return "Você não possui permissão para realizar esta ação.";
-    if (error.status === 409) return "O estado atual da solicitação não permite esta ação.";
+    if (error.status === 403) return "Você não possui permissão para realizar está ação.";
+    if (error.status === 409) return "O estado atual da solicitação não permite está ação.";
   }
   return "Não foi possível concluir a ação. Tente novamente.";
 }

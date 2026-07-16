@@ -106,7 +106,7 @@ describe("LoginPage", () => {
     await screen.findByRole("button", { name: "Entrar" });
     submitLoginForm();
 
-    expect(await screen.findAllByText("Campo obrigatorio.")).toHaveLength(2);
+    expect(await screen.findAllByText("Campo obrigatório.")).toHaveLength(2);
     expect(loginAccount).not.toHaveBeenCalled();
   });
 
@@ -121,7 +121,7 @@ describe("LoginPage", () => {
     });
     submitLoginForm();
 
-    expect(await screen.findByText("Informe um e-mail valido.")).toBeDefined();
+    expect(await screen.findByText("Informe um e-mail válido.")).toBeDefined();
     expect(loginAccount).not.toHaveBeenCalled();
   });
 
@@ -156,7 +156,7 @@ describe("LoginPage", () => {
       new ApiError({
         status: 401,
         code: "invalid_credentials",
-        message: "Credenciais invalidas.",
+        message: "Credenciais inválidas.",
       }),
     );
     renderLogin();
@@ -165,7 +165,7 @@ describe("LoginPage", () => {
     fillLoginForm();
     submitLoginForm();
 
-    expect(await screen.findByText("E-mail ou senha invalidos.")).toBeDefined();
+    expect(await screen.findByText("E-mail ou senha inválidos.")).toBeDefined();
   });
 
   it("disables the button while logging in", async () => {
@@ -186,7 +186,7 @@ describe("LoginPage", () => {
       new ApiError({
         status: 401,
         code: "not_authenticated",
-        message: "Nao autenticado.",
+        message: "Não autenticado.",
       }),
     );
     renderLogin();

@@ -22,7 +22,7 @@ export function PublicRouteGuard({ children }: PublicRouteGuardProps) {
   if (status === "loading" || status === "authenticated") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
-        <Loading label="Validando sessao" />
+        <Loading label="Validando sessão" />
       </main>
     );
   }

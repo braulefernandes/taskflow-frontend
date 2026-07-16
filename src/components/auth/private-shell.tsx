@@ -9,7 +9,7 @@ type PrivateShellProps = { children: ReactNode };
 
 const navigation = [
   { label: "Dashboard", href: "/dashboard", icon: HomeIcon, management: true },
-  { label: "SolicitaÃ§Ãµes", href: "/solicitacoes", icon: TicketIcon },
+  { label: "Solicitações", href: "/solicitacoes", icon: TicketIcon },
   { label: "Usuários", href: "/usuarios", icon: UsersIcon, admin: true },
   { label: "Categorias", href: "/categorias", icon: TagIcon, admin: true },
   { label: "Perfil", href: "/perfil", icon: UserIcon },
@@ -17,7 +17,7 @@ const navigation = [
 
 const routeLabels: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/solicitacoes": "SolicitaÃ§Ãµes",
+  "/solicitacoes": "Solicitações",
   "/usuarios": "Usuários",
   "/categorias": "Categorias",
   "/perfil": "Perfil",

@@ -33,7 +33,7 @@ vi.mock("@/services/auth", () => ({
 
 function UpdateSessionUser() {
   const { session, updateSessionUser } = useSession();
-  return <button onClick={() => session && updateSessionUser({ ...session.user, name: "Nome Atualizado" })}>Atualizar usuario</button>;
+  return <button onClick={() => session && updateSessionUser({ ...session.user, name: "Nome Atualizado" })}>Atualizar usuário</button>;
 }
 
 const session = {
@@ -94,7 +94,7 @@ describe("route guards", () => {
       </PrivateRouteGuard>,
     );
 
-    expect(screen.getByRole("status", { name: "Validando sessao" })).toBeDefined();
+    expect(screen.getByRole("status", { name: "Validando sessão" })).toBeDefined();
     expect(screen.queryByText("Conteudo privado")).toBeNull();
 
     await waitFor(() => {
@@ -126,7 +126,7 @@ describe("route guards", () => {
       </PrivateRouteGuard>,
     );
 
-    expect(screen.getByRole("status", { name: "Validando sessao" })).toBeDefined();
+    expect(screen.getByRole("status", { name: "Validando sessão" })).toBeDefined();
     expect(screen.queryByText("Conteudo privado")).toBeNull();
   });
 
@@ -136,7 +136,7 @@ describe("route guards", () => {
       new ApiError({
         status: 401,
         code: "not_authenticated",
-        message: "Nao autenticado.",
+        message: "Não autenticado.",
       }),
     );
 
@@ -159,7 +159,7 @@ describe("route guards", () => {
       new ApiError({
         status: 401,
         code: "not_authenticated",
-        message: "Nao autenticado.",
+        message: "Não autenticado.",
       }),
     );
 
@@ -198,14 +198,14 @@ describe("route guards", () => {
 
     renderWithSession(
       <PublicRouteGuard>
-        <p>Formulario de login</p>
+        <p>Formulário de login</p>
       </PublicRouteGuard>,
     );
 
     await waitFor(() => {
       expect(routerReplaceMock).toHaveBeenCalledWith("/dashboard");
     });
-    expect(screen.queryByText("Formulario de login")).toBeNull();
+    expect(screen.queryByText("Formulário de login")).toBeNull();
   });
 
   it("redirects authenticated users away from cadastro public pages", async () => {
@@ -214,14 +214,14 @@ describe("route guards", () => {
 
     renderWithSession(
       <PublicRouteGuard>
-        <p>Formulario de cadastro</p>
+        <p>Formulário de cadastro</p>
       </PublicRouteGuard>,
     );
 
     await waitFor(() => {
       expect(routerReplaceMock).toHaveBeenCalledWith("/dashboard");
     });
-    expect(screen.queryByText("Formulario de cadastro")).toBeNull();
+    expect(screen.queryByText("Formulário de cadastro")).toBeNull();
   });
 
   it("logs out, clears token, clears cache and redirects", async () => {
@@ -282,7 +282,7 @@ describe("route guards", () => {
     vi.mocked(getCurrentSession).mockResolvedValueOnce(session);
     const { queryClient } = renderWithSession(<PrivateShell><UpdateSessionUser /></PrivateShell>);
     expect(await screen.findByText("Ana Silva")).toBeDefined();
-    fireEvent.click(screen.getByRole("button", { name: "Atualizar usuario" }));
+    fireEvent.click(screen.getByRole("button", { name: "Atualizar usuário" }));
     await waitFor(() => expect(screen.getByText("Nome Atualizado")).toBeDefined());
     expect(queryClient.getQueryData<typeof session>(["auth", "me"])?.user.name).toBe("Nome Atualizado");
     expect(window.localStorage.getItem("taskflow.access_token")).toBe("valid-token");
